@@ -1,7 +1,9 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { TratoMark } from "@/components/brand/trato-mark";
 
 export default function LoginForm() {
@@ -9,6 +11,7 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("dono@domcarlos.local");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -84,19 +87,43 @@ export default function LoginForm() {
               className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--graphite)] px-4 text-base text-[var(--offwhite)] outline-none ring-[var(--copper)] focus:ring-2"
             />
           </label>
-          <label className="block space-y-2">
-            <span className="text-xs font-medium uppercase tracking-wider text-[var(--steel)]">
-              Senha
-            </span>
-            <input
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--graphite)] px-4 text-base text-[var(--offwhite)] outline-none ring-[var(--copper)] focus:ring-2"
-            />
-          </label>
+          <div className="space-y-2">
+            <label className="block space-y-2">
+              <span className="text-xs font-medium uppercase tracking-wider text-[var(--steel)]">
+                Senha
+              </span>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--graphite)] px-4 pr-12 text-base text-[var(--offwhite)] outline-none ring-[var(--copper)] focus:ring-2"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-[var(--steel)] hover:text-[var(--offwhite)]"
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" strokeWidth={1.8} />
+                  ) : (
+                    <Eye className="h-5 w-5" strokeWidth={1.8} />
+                  )}
+                </button>
+              </div>
+            </label>
+            <div className="flex justify-end">
+              <Link
+                href="/app/recuperar-senha"
+                className="text-sm text-[var(--steel)] transition hover:text-[var(--copper)]"
+              >
+                Recuperar senha
+              </Link>
+            </div>
+          </div>
 
           {error ? (
             <p className="rounded-lg bg-[color-mix(in_srgb,#ef4444_18%,transparent)] px-3 py-2 text-sm text-[#fca5a5]">

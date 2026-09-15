@@ -9,10 +9,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const isLogin = pathname === "/app/login";
+  const isPublicAuth =
+    pathname === "/app/login" || pathname === "/app/recuperar-senha";
   const hasSession = Boolean(request.cookies.get(SESSION_COOKIE)?.value);
 
-  if (!hasSession && !isLogin) {
+  if (!hasSession && !isPublicAuth) {
     const login = new URL("/app/login", request.url);
     login.searchParams.set("next", pathname);
     return NextResponse.redirect(login);
