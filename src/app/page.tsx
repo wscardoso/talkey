@@ -38,12 +38,20 @@ export default function Home() {
           <p className="trato-copy-in mt-6 max-w-md text-lg leading-relaxed text-[var(--steel)] sm:text-xl">
             Dar um trato no visual. Manter o horário.
           </p>
-          <Link
-            href="/agendar/dom-carlos-barbearia"
-            className="trato-cta-in mt-10 inline-flex min-h-12 items-center justify-center rounded-xl bg-[var(--copper)] px-8 text-sm font-semibold tracking-wide text-[var(--offwhite)] transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
-          >
-            Agendar demo
-          </Link>
+          <div className="trato-cta-in mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Link
+              href="/comecar"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[var(--copper)] px-8 text-sm font-semibold tracking-wide text-[var(--offwhite)] transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Começar grátis
+            </Link>
+            <Link
+              href="/agendar/dom-carlos-barbearia"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[var(--border)] px-8 text-sm font-semibold tracking-wide text-[var(--offwhite)] transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Ver demo
+            </Link>
+          </div>
         </div>
 
         <p className="relative z-10 px-6 pb-6 text-center text-[11px] tracking-wide text-[var(--steel)]">

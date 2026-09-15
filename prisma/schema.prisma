@@ -113,6 +113,8 @@ model Tenant {
   waProvider        String?         @map("wa_provider") // uazapi
   isActive          Boolean         @default(true) @map("is_active")
   plan              String          @default("starter")
+  trialStartedAt    DateTime?       @map("trial_started_at") @db.Timestamptz(6)
+  trialEndsAt       DateTime?       @map("trial_ends_at") @db.Timestamptz(6)
   createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
 
