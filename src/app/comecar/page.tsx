@@ -56,7 +56,7 @@ export default function ComecarPage() {
         setError(data.message ?? "Não foi possível criar a conta");
         return;
       }
-      router.replace("/app/servicos");
+      router.replace("/app/whatsapp");
       router.refresh();
     } catch {
       setError("Não foi possível conectar. Tente de novo.");

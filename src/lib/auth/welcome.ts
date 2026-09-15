@@ -25,7 +25,7 @@ export function buildWelcomeMessage(params: WelcomeParams): string {
     `Acesse seu painel:`,
     loginUrl,
     "",
-    `Próximo passo: conecte o WhatsApp em Configurações / WhatsApp para enviar confirmações e lembretes.`,
+    `Próximo passo: conecte o WhatsApp em /app/whatsapp para enviar confirmações e lembretes.`,
     "",
     `Equipe Trato`,
   ].join("\n");

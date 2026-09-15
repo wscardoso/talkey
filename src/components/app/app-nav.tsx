@@ -12,6 +12,7 @@ import {
   Scissors,
   UserRound,
   Settings,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ const LINKS = [
   { href: "/app/clientes", label: "Clientes", icon: Users },
   { href: "/app/financeiro", label: "Financeiro", icon: Wallet },
   { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
+  { href: "/app/whatsapp", label: "WhatsApp", icon: MessageCircle },
   { href: "/app/configuracoes", label: "Config", icon: Settings },
 ] as const;
 
