@@ -301,7 +301,7 @@ export function StaffBoard() {
         onClick={openCreate}
         className="rounded-xl bg-[var(--copper)] px-4 py-2.5 text-sm font-semibold text-[var(--graphite)]"
       >
-        Novo barbeiro
+        Novo funcionário
       </button>
 
       {loading ? (
@@ -355,7 +355,7 @@ export function StaffBoard() {
           <div className="max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--graphite)] p-4">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-lg font-semibold">
-                {creating ? "Novo barbeiro" : form.displayName || "Equipe"}
+                {creating ? "Novo funcionário" : form.displayName || "Equipe"}
               </h2>
               <button
                 type="button"
