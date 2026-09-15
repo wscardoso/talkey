@@ -152,12 +152,17 @@ Tenant inadimplente pode ser desativado; limites starter documentados e enforced
 7. **PR-C1** — billing/gating + expiração de trial
 8. **PR-D1** — campanhas ou resumos avançados ✅
 9. **PR-D2** — mensalistas ✅
-10. **PR-D3** — temas + biblioteca de mídias ✅ (URL de logo/imagem; upload Storage depois)
+10. **PR-D3** — temas + biblioteca de mídias ✅ (URL + upload Storage)
+11. **PR-E1** — upload logo/serviço via Supabase Storage ✅
+12. **PR-E2** — troca de senha do OWNER logado ✅
+13. **PR-E3** — checkout assinatura Asaas PIX + webhook ✅
 
 ## Continua manual na Fase A
 - Criar instância WhatsApp (uazapi) e colar `waInstanceId`
 - Chave Asaas do tenant (se depósito)
 - Criar o Tenant + OWNER inicial (até Fase B)
+- Coolify: `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` + bucket público `tenant-media`
+- Webhook Asaas apontando para `/api/webhooks/asaas` (depósito + `trato-sub:`)
 
 ---
 
@@ -168,7 +173,8 @@ Itens capturados fora do escopo A→B→C atual. **Não estão alocados a nenhum
 ### Perfil e identidade do tenant (área do dono)
 - Aba/seção de perfil: foto/logo (upload usável, não só URL), endereço, aparência (marca), e troca de senha do OWNER
 - Separar mentalmente “conta” (e-mail/senha) de “salão” (logo, endereço, brand) se a UX pedir
-- Hoje `/app/configuracoes` já cobre parte disso (nome, endereço, cor, `logoUrl`); falta polish de mídia + senha
+- Hoje `/app/configuracoes` já cobre parte disso (nome, endereço, cor, `logoUrl`); troca de senha ✅; falta polish de mídia avançada
+- **Tema no painel do dono:** hoje `brandPrimary` / presets em `/app/temas` afetam só a página pública (`/agendar/{slug}`). Futuro: opcionalmente aplicar a cor do tenant no shell do `/app` (nav ativa, CTAs, acentos), sem trocar a marca TRATO do produto — decidir UX (só acentos vs. shell inteiro)
 
 ### Relatórios avançados
 - Gráficos de pico de horários
@@ -184,7 +190,7 @@ Itens capturados fora do escopo A→B→C atual. **Não estão alocados a nenhum
 ### Backlog — engajamento (fora de D até demanda real)
 - Programa de fidelidade (pontos por agendamento, resgate)
 - Vale-presente / gift cards
-- Biblioteca de mídias (storage + `Service.imageUrl`; galeria pública vs upload por serviço)
+- Biblioteca de mídias (storage + `Service.imageUrl`; galeria pública vs upload por serviço) — upload básico ✅; galeria avançada ainda futura
 
 ---
 
