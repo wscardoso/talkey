@@ -41,6 +41,12 @@ export function SettingsForm() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [depositFixedReais, setDepositFixedReais] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordBusy, setPasswordBusy] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -117,6 +123,31 @@ export function SettingsForm() {
     }
     setMessage("Configurações salvas");
     await load();
+  };
+
+  const changePassword = async () => {
+    setPasswordBusy(true);
+    setPasswordError(null);
+    setPasswordMessage(null);
+    const res = await fetch("/api/app/password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setPasswordBusy(false);
+    if (!res.ok) {
+      setPasswordError(data.message ?? "Não foi possível alterar a senha");
+      return;
+    }
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setPasswordMessage("Senha atualizada");
   };
 
   if (loading || !settings) {
@@ -358,6 +389,62 @@ export function SettingsForm() {
             placeholder="uazapi"
           />
         </Field>
+      </section>
+
+      <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--lead)] p-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--steel)]">
+          Senha
+        </h2>
+        <Field label="Senha atual">
+          <input
+            type="password"
+            autoComplete="current-password"
+            className={inputClass}
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
+        </Field>
+        <Field label="Nova senha">
+          <input
+            type="password"
+            autoComplete="new-password"
+            className={inputClass}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </Field>
+        <Field label="Confirmar nova senha">
+          <input
+            type="password"
+            autoComplete="new-password"
+            className={inputClass}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </Field>
+        {passwordError ? (
+          <p className="rounded-lg bg-rose-500/15 px-3 py-2 text-sm text-rose-300">
+            {passwordError}
+          </p>
+        ) : null}
+        {passwordMessage ? (
+          <p className="rounded-lg bg-emerald-500/15 px-3 py-2 text-sm text-emerald-300">
+            {passwordMessage}
+          </p>
+        ) : null}
+        <button
+          type="button"
+          disabled={
+            passwordBusy ||
+            !currentPassword ||
+            !newPassword ||
+            !confirmPassword
+          }
+          onClick={() => void changePassword()}
+          className="rounded-xl border border-[var(--border)] px-4 py-2.5 text-sm font-semibold disabled:opacity-50"
+        >
+          {passwordBusy ? "Alterando…" : "Alterar senha"}
+        </button>
       </section>
 
       {error ? (
