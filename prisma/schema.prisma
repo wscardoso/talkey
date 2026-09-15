@@ -108,6 +108,7 @@ model Tenant {
   depositFixedCents Int?            @map("deposit_fixed_cents")
   paymentProvider   PaymentProvider @default(NONE) @map("payment_provider")
   asaasApiKeyEnc    String?         @map("asaas_api_key_enc")
+  asaasCustomerId   String?         @map("asaas_customer_id")
   stripeAcctId      String?         @map("stripe_acct_id")
   waInstanceId      String?         @map("wa_instance_id") // uazapiGO instance token
   waProvider        String?         @map("wa_provider") // uazapi

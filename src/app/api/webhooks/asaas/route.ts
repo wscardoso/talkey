@@ -3,6 +3,13 @@ import { markPaymentPaid } from "@/lib/payments/deposit";
 import { enqueueBookingCreated } from "@/lib/whatsapp";
 import { prisma } from "@/lib/prisma";
 import { formatAddress } from "@/lib/formatters/br";
+import {
+  parseSubExternalRef,
+} from "@/lib/billing/asaas-checkout";
+import {
+  activateSubscription,
+  evaluateAccess,
+} from "@/lib/billing/access";
 
 export const runtime = "nodejs";
 
@@ -38,6 +45,45 @@ export async function POST(request: Request) {
     event !== "PAYMENT_RECEIVED"
   ) {
     return NextResponse.json({ ok: true, ignored: event || "event" });
+  }
+
+  const sub = parseSubExternalRef(externalRef);
+  if (sub) {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: sub.tenantId },
+      select: {
+        id: true,
+        plan: true,
+        isActive: true,
+        trialEndsAt: true,
+        subscriptionEndsAt: true,
+      },
+    });
+    if (!tenant) {
+      return NextResponse.json({ ok: true, ignored: "tenant_missing" });
+    }
+
+    const access = evaluateAccess(tenant);
+    const alreadyOk =
+      access.allowed &&
+      (tenant.plan === sub.plan || tenant.plan === "pro") &&
+      tenant.subscriptionEndsAt &&
+      tenant.subscriptionEndsAt.getTime() > Date.now() + 20 * 24 * 60 * 60 * 1000;
+
+    if (!alreadyOk) {
+      await activateSubscription({
+        tenantId: sub.tenantId,
+        plan: sub.plan,
+        months: sub.months,
+      });
+    }
+
+    return NextResponse.json({
+      ok: true,
+      subscription: true,
+      tenantId: sub.tenantId,
+      activated: !alreadyOk,
+    });
   }
 
   const result = await markPaymentPaid({

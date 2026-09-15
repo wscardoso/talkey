@@ -5,6 +5,9 @@ import {
   activateSubscription,
   syncTenantAccess,
 } from "@/lib/billing/access";
+import {
+  createSubscriptionPixCheckout,
+} from "@/lib/billing/asaas-checkout";
 import { PLANS, formatPlanPrice } from "@/lib/billing/plans";
 import { prisma } from "@/lib/prisma";
 
@@ -21,6 +24,12 @@ const requestSchema = z.object({
   action: z.literal("request"),
   plan: z.enum(["starter", "pro"]),
   note: z.string().trim().max(500).optional(),
+});
+
+const checkoutSchema = z.object({
+  action: z.literal("checkout"),
+  plan: z.enum(["starter", "pro"]),
+  months: z.coerce.number().int().min(1).max(24).optional().default(1),
 });
 
 export async function GET() {
@@ -51,6 +60,7 @@ export async function GET() {
       priceCents: PLANS[id].priceCents,
     })),
     canSelfActivate: Boolean(process.env.BILLING_ACTIVATE_SECRET),
+    canCheckout: true,
   });
 }
 
@@ -82,6 +92,65 @@ export async function POST(request: Request) {
       message:
         "Pedido registrado. Entraremos em contato para concluir o pagamento.",
     });
+  }
+
+  if (action === "checkout") {
+    const parsed = checkoutSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "VALIDATION_ERROR", issues: parsed.error.flatten() },
+        { status: 400 },
+      );
+    }
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: auth.session.tenantId },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        email: true,
+        asaasCustomerId: true,
+      },
+    });
+    if (!tenant) {
+      return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
+    }
+
+    try {
+      const checkout = await createSubscriptionPixCheckout({
+        tenantId: tenant.id,
+        tenantName: tenant.name,
+        email: auth.session.email || tenant.email || "dono@trato.local",
+        phone: tenant.phone,
+        asaasCustomerId: tenant.asaasCustomerId,
+        plan: parsed.data.plan,
+        months: parsed.data.months,
+      });
+
+      return NextResponse.json({
+        ok: true,
+        checkout: {
+          paymentId: checkout.paymentId,
+          invoiceUrl: checkout.invoiceUrl,
+          pixQrCode: checkout.pixQrCode,
+          pixCopyPaste: checkout.pixCopyPaste,
+          valueCents: checkout.valueCents,
+          dryRun: checkout.dryRun,
+          plan: parsed.data.plan,
+          months: parsed.data.months,
+        },
+      });
+    } catch (err) {
+      console.error("[billing:checkout]", err);
+      return NextResponse.json(
+        {
+          error: "CHECKOUT_FAILED",
+          message: "Não foi possível gerar o PIX. Tente de novo.",
+        },
+        { status: 502 },
+      );
+    }
   }
 
   if (action === "activate") {

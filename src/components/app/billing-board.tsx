@@ -2,12 +2,24 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { formatPriceBRL } from "@/lib/formatters/br";
 
 type PlanCard = {
   id: "starter" | "pro";
   label: string;
   description: string;
   priceLabel: string;
+};
+
+type CheckoutPayload = {
+  paymentId: string;
+  invoiceUrl: string | null;
+  pixQrCode: string;
+  pixCopyPaste: string;
+  valueCents: number;
+  dryRun: boolean;
+  plan: "starter" | "pro";
+  months: number;
 };
 
 type BillingState = {
@@ -27,6 +39,7 @@ type BillingState = {
   } | null;
   plans: PlanCard[];
   canSelfActivate: boolean;
+  canCheckout?: boolean;
 };
 
 export function BillingBoard() {
@@ -39,17 +52,35 @@ export function BillingBoard() {
   const [secret, setSecret] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [checkout, setCheckout] = useState<CheckoutPayload | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetch("/api/app/billing");
     const data = await res.json();
     setState(data);
     setLoading(false);
+    return data as BillingState;
   }, []);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!checkout) return;
+    const id = window.setInterval(() => {
+      void (async () => {
+        const data = await load();
+        if (data?.access?.allowed && data.tenant?.subscriptionEndsAt) {
+          setCheckout(null);
+          setMessage("Pagamento confirmado. Plano ativado.");
+          router.replace("/app/agenda");
+          router.refresh();
+        }
+      })();
+    }, 4000);
+    return () => window.clearInterval(id);
+  }, [checkout, load, router]);
 
   const requestPlan = async (plan: "starter" | "pro") => {
     setBusy(true);
@@ -67,6 +98,29 @@ export function BillingBoard() {
       return;
     }
     setMessage(data.message ?? "Pedido enviado");
+  };
+
+  const startCheckout = async (plan: "starter" | "pro") => {
+    setBusy(true);
+    setError(null);
+    setMessage(null);
+    const res = await fetch("/api/app/billing", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "checkout", plan, months: 1 }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setBusy(false);
+    if (!res.ok) {
+      setError(data.message ?? "Falha ao gerar PIX");
+      return;
+    }
+    setCheckout(data.checkout as CheckoutPayload);
+    if (data.checkout?.dryRun) {
+      setMessage(
+        "Modo demonstração (sem Asaas). Configure ASAAS_API_KEY para PIX real.",
+      );
+    }
   };
 
   const activate = async (plan: "starter" | "pro") => {
@@ -150,8 +204,16 @@ export function BillingBoard() {
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => void requestPlan(plan.id)}
+                onClick={() => void startCheckout(plan.id)}
                 className="min-h-11 rounded-xl bg-[var(--copper)] px-4 text-sm font-semibold disabled:opacity-50"
+              >
+                Pagar com PIX
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void requestPlan(plan.id)}
+                className="min-h-11 rounded-xl border border-[var(--border)] px-4 text-sm font-semibold disabled:opacity-50"
               >
                 Solicitar {plan.label}
               </button>
@@ -170,6 +232,56 @@ export function BillingBoard() {
         ))}
       </section>
 
+      {checkout ? (
+        <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--lead)] p-4">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--steel)]">
+            PIX — {checkout.plan} ({formatPriceBRL(checkout.valueCents)})
+          </h2>
+          {checkout.pixQrCode.startsWith("data:image") ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={checkout.pixQrCode}
+              alt="QR Code PIX"
+              className="mx-auto h-48 w-48 rounded-xl bg-white p-2"
+            />
+          ) : (
+            <p className="break-all rounded-xl border border-[var(--border)] bg-[var(--graphite)] p-3 font-mono text-xs">
+              {checkout.pixCopyPaste}
+            </p>
+          )}
+          <button
+            type="button"
+            className="min-h-11 w-full rounded-xl border border-[var(--border)] text-sm"
+            onClick={() =>
+              void navigator.clipboard.writeText(checkout.pixCopyPaste)
+            }
+          >
+            Copiar código PIX
+          </button>
+          {checkout.invoiceUrl ? (
+            <a
+              href={checkout.invoiceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="block text-center text-sm text-[var(--copper)] underline"
+            >
+              Abrir fatura Asaas
+            </a>
+          ) : null}
+          <p className="text-xs text-[var(--steel)]">
+            Após o pagamento, a ativação é automática. Esta tela verifica a cada
+            poucos segundos.
+          </p>
+          <button
+            type="button"
+            className="text-sm text-[var(--steel)] underline"
+            onClick={() => setCheckout(null)}
+          >
+            Fechar
+          </button>
+        </section>
+      ) : null}
+
       {state.canSelfActivate ? (
         <label className="block space-y-2">
           <span className="text-xs font-medium uppercase tracking-wider text-[var(--steel)]">
@@ -183,12 +295,7 @@ export function BillingBoard() {
             placeholder="BILLING_ACTIVATE_SECRET"
           />
         </label>
-      ) : (
-        <p className="text-xs text-[var(--steel)]">
-          Checkout automático (Asaas) chega na próxima iteração. Por enquanto,
-          solicite o plano e confirme o pagamento com a equipe Trato.
-        </p>
-      )}
+      ) : null}
 
       {message ? (
         <p className="text-sm text-[color-mix(in_srgb,var(--copper)_90%,white)]">
