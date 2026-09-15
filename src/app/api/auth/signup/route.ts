@@ -100,6 +100,13 @@ export async function POST(request: Request) {
     return { tenant, user };
   });
 
+  const { ensureTenantMessagingDefaults } = await import(
+    "@/lib/messaging/templates"
+  );
+  void ensureTenantMessagingDefaults(result.tenant.id).catch((err) =>
+    console.error("[signup:messaging-defaults]", err),
+  );
+
   void sendSignupWelcome({
     ownerName: data.ownerName,
     salonName: data.salonName,

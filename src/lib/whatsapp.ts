@@ -46,6 +46,34 @@ function buildCreatedMessage(ctx: BookingNotifyContext): string {
     .join("\n");
 }
 
+function templateVars(ctx: BookingNotifyContext) {
+  return {
+    cliente: ctx.customerName,
+    servico: ctx.serviceName,
+    profissional: ctx.staffName,
+    barbearia: ctx.tenantName,
+    endereco: ctx.address,
+    quando: localWhen(ctx.startsAt, ctx.timezone),
+  };
+}
+
+async function resolveMessage(
+  ctx: BookingNotifyContext,
+  key: "booking_created" | "reminder_24h" | "reminder_2h",
+  fallback: string,
+): Promise<string> {
+  try {
+    const {
+      getTemplateBody,
+      renderTemplate,
+    } = await import("@/lib/messaging/templates");
+    const body = await getTemplateBody(ctx.tenantId, key);
+    return renderTemplate(body, templateVars(ctx));
+  } catch {
+    return fallback;
+  }
+}
+
 function buildReminder24Message(ctx: BookingNotifyContext): string {
   return [
     `Oi ${ctx.customerName}! Lembrete do seu horário na *${ctx.tenantName}* amanhã.`,
@@ -417,7 +445,30 @@ export function scheduleDemoReminder24(ctx: BookingNotifyContext): void {
 export async function enqueueBookingCreated(
   ctx: BookingNotifyContext,
 ): Promise<void> {
-  const text = buildCreatedMessage(ctx);
+  const {
+    isNotificationEnabled,
+  } = await import("@/lib/messaging/templates");
+
+  const sendCreated = await isNotificationEnabled(
+    ctx.tenantId,
+    "booking_created",
+  );
+  const sendReminder24 = await isNotificationEnabled(
+    ctx.tenantId,
+    "reminder_24h",
+  );
+  const sendReminder2 = await isNotificationEnabled(
+    ctx.tenantId,
+    "reminder_2h",
+  );
+  const sendFeedback = await isNotificationEnabled(
+    ctx.tenantId,
+    "feedback_post",
+  );
+
+  const text = sendCreated
+    ? await resolveMessage(ctx, "booking_created", buildCreatedMessage(ctx))
+    : "";
   const choices = cancelOnlyChoices(ctx.bookingId);
   const toE164 = digitsOnly(ctx.customerPhoneE164);
   const payload: Prisma.InputJsonValue = {
@@ -454,32 +505,34 @@ export async function enqueueBookingCreated(
     },
   };
 
-  const log = await prisma.notificationLog.create({
-    data: {
-      tenantId: ctx.tenantId,
-      bookingId: ctx.bookingId,
-      channel: "WHATSAPP",
-      event: "BOOKING_CREATED" satisfies NotificationEvent,
-      toE164,
-      templateKey: "booking_created_v1",
-      payload,
-      status: "queued",
-      scheduledFor: new Date(),
-    },
-  });
-
-  void (async () => {
-    const result = await sendMenuViaProvider(ctx, text, choices);
-    await prisma.notificationLog.update({
-      where: { id: log.id },
+  if (sendCreated) {
+    const log = await prisma.notificationLog.create({
       data: {
-        status: result.status,
-        providerMsgId: result.providerMsgId,
-        error: result.error,
-        sentAt: result.status === "sent" ? new Date() : null,
+        tenantId: ctx.tenantId,
+        bookingId: ctx.bookingId,
+        channel: "WHATSAPP",
+        event: "BOOKING_CREATED" satisfies NotificationEvent,
+        toE164,
+        templateKey: "booking_created_v1",
+        payload,
+        status: "queued",
+        scheduledFor: new Date(),
       },
     });
-  })();
+
+    void (async () => {
+      const result = await sendMenuViaProvider(ctx, text, choices);
+      await prisma.notificationLog.update({
+        where: { id: log.id },
+        data: {
+          status: result.status,
+          providerMsgId: result.providerMsgId,
+          error: result.error,
+          sentAt: result.status === "sent" ? new Date() : null,
+        },
+      });
+    })();
+  }
 
   const now = DateTime.utc();
   const reminder24Raw = DateTime.fromJSDate(ctx.startsAt, { zone: "utc" }).minus({
@@ -494,16 +547,23 @@ export async function enqueueBookingCreated(
     minutes: 30,
   });
 
-  const reminder24Text = buildReminder24Message(ctx);
+  const reminder24Text = sendReminder24
+    ? await resolveMessage(ctx, "reminder_24h", buildReminder24Message(ctx))
+    : "";
   const reminder24Choices = confirmCancelChoices(ctx.bookingId);
+  const reminder2Text = sendReminder2
+    ? await resolveMessage(ctx, "reminder_2h", buildReminder2Message(ctx))
+    : "";
 
   const delayed: Array<{
     event: NotificationEvent;
     templateKey: string;
     when: DateTime;
     payload: Prisma.InputJsonValue;
-  }> = [
-    {
+  }> = [];
+
+  if (sendReminder24) {
+    delayed.push({
       event: "REMINDER_24H",
       templateKey: "reminder_24h_v1",
       when: reminder24When,
@@ -518,8 +578,10 @@ export async function enqueueBookingCreated(
           choices: reminder24Choices,
         },
       },
-    },
-    {
+    });
+  }
+  if (sendReminder2) {
+    delayed.push({
       event: "REMINDER_2H",
       templateKey: "reminder_2h_v1",
       when: reminder2,
@@ -527,10 +589,12 @@ export async function enqueueBookingCreated(
         event: "REMINDER_2H",
         scheduledFor: reminder2.toISO(),
         bookingId: ctx.bookingId,
-        message: { type: "text", text: buildReminder2Message(ctx) },
+        message: { type: "text", text: reminder2Text },
       },
-    },
-    {
+    });
+  }
+  if (sendFeedback) {
+    delayed.push({
       event: "FEEDBACK_POST_SERVICE",
       templateKey: "feedback_post_v1",
       when: feedback,
@@ -539,24 +603,26 @@ export async function enqueueBookingCreated(
         scheduledFor: feedback.toISO(),
         bookingId: ctx.bookingId,
       },
-    },
-  ];
+    });
+  }
 
-  await prisma.notificationLog.createMany({
-    data: delayed
-      .filter((d) => d.event === "REMINDER_24H" || d.when > now)
-      .map((d) => ({
-        tenantId: ctx.tenantId,
-        bookingId: ctx.bookingId,
-        channel: "WHATSAPP" as const,
-        event: d.event,
-        toE164,
-        templateKey: d.templateKey,
-        payload: d.payload,
-        status: "queued",
-        scheduledFor: d.when.toJSDate(),
-      })),
-  });
+  if (delayed.length) {
+    await prisma.notificationLog.createMany({
+      data: delayed
+        .filter((d) => d.event === "REMINDER_24H" || d.when > now)
+        .map((d) => ({
+          tenantId: ctx.tenantId,
+          bookingId: ctx.bookingId,
+          channel: "WHATSAPP" as const,
+          event: d.event,
+          toE164,
+          templateKey: d.templateKey,
+          payload: d.payload,
+          status: "queued",
+          scheduledFor: d.when.toJSDate(),
+        })),
+    });
+  }
 }
 
 type BookingWithRelations = {

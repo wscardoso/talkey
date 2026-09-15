@@ -126,8 +126,42 @@ model Tenant {
   notificationLogs NotificationLog[]
   locations        Location[]
   payments         Payment[]
+  messageTemplates MessageTemplate[]
+  notificationPreferences NotificationPreference[]
 
   @@map("tenants")
+}
+
+model MessageTemplate {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  key       String
+  label     String
+  body      String
+  isActive  Boolean  @default(true) @map("is_active")
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key])
+  @@index([tenantId])
+  @@map("message_templates")
+}
+
+model NotificationPreference {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  event     String
+  enabled   Boolean  @default(true)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, event])
+  @@index([tenantId])
+  @@map("notification_preferences")
 }
 
 model Location {
