@@ -121,7 +121,7 @@ export async function POST(request: Request) {
       const checkout = await createSubscriptionPixCheckout({
         tenantId: tenant.id,
         tenantName: tenant.name,
-        email: auth.session.email || tenant.email || "dono@trato.local",
+        email: auth.session.email || tenant.email || "dono@talkey.local",
         phone: tenant.phone,
         asaasCustomerId: tenant.asaasCustomerId,
         plan: parsed.data.plan,

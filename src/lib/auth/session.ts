@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from "crypto";
 import type { UserRole } from "@prisma/client";
 import { cookies } from "next/headers";
 
-export const SESSION_COOKIE = "trato_session";
+export const SESSION_COOKIE = "talkey_session";
 const SESSION_DAYS = 7;
 const SESSION_MAX_AGE = SESSION_DAYS * 24 * 60 * 60;
 
@@ -20,7 +20,7 @@ function getAuthSecret(): string {
   if (process.env.NODE_ENV === "production") {
     throw new Error("AUTH_SECRET must be set in production");
   }
-  return "trato-local-dev-secret-change-me";
+  return "talkey-local-dev-secret-change-me";
 }
 
 function sign(body: string): string {

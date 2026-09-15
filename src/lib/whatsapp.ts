@@ -165,7 +165,7 @@ function extractProviderMsgId(json: unknown): string | null {
 
 let webhookEnsurePromise: Promise<void> | null = null;
 
-/** Register inbound webhook once per process so button replies reach Trato. */
+/** Register inbound webhook once per process so button replies reach Talkey. */
 export async function ensureUazapiWebhook(): Promise<void> {
   if (webhookEnsurePromise) return webhookEnsurePromise;
   webhookEnsurePromise = (async () => {
@@ -291,7 +291,7 @@ async function sendMenuViaProvider(
         type: "button",
         text,
         choices,
-        footerText: "Trato · agendamento com compromisso",
+        footerText: "Talkey · agendamento com compromisso",
       }),
     });
 

@@ -308,7 +308,7 @@ async function main() {
     }
   }
 
-  const ownerPassword = process.env.OWNER_PASSWORD || "trato-demo";
+  const ownerPassword = process.env.OWNER_PASSWORD || "talkey-demo";
   const passwordHash = hashPassword(ownerPassword);
   await prisma.user.upsert({
     where: {

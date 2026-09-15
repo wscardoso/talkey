@@ -32,7 +32,7 @@ export default async function BillingLayout({
               href="/app/assinatura"
               className="font-[family-name:var(--font-display)] text-xl tracking-[0.18em] text-[var(--copper)]"
             >
-              TRATO
+              TALKEY
             </Link>
             <p className="truncate text-xs text-[var(--steel)]">
               {tenant?.name ?? "Assinatura"}

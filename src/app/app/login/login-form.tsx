@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { TratoMark } from "@/components/brand/trato-mark";
+import { TalkeyMark } from "@/components/brand/talkey-mark";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -61,9 +61,9 @@ export default function LoginForm() {
       />
       <div className="relative z-10 mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
         <div className="mb-10 flex flex-col items-center gap-3 text-center">
-          <TratoMark className="h-10 w-10 text-[var(--copper)]" />
+          <TalkeyMark className="h-10 w-10 text-[var(--copper)]" />
           <h1 className="font-[family-name:var(--font-display)] text-5xl tracking-[0.2em]">
-            TRATO
+            TALKEY
           </h1>
           <p className="text-sm text-[var(--steel)]">
             Acesso do dono — agenda e operação do dia

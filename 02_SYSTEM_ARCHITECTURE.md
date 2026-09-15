@@ -1,6 +1,6 @@
 # 02 — System Architecture & Database Schema
 
-**Product:** Trato — multi-tenant Booking SaaS (Barber / Beauty vertical)  
+**Product:** Talkey — multi-tenant Booking SaaS (Barber / Beauty vertical)
 **Audience:** Engineering, Product, Infra  
 **Basis:** Reverse-engineering signals from BarberPro (`/agendar/[slug]`, tenant SEO SSR, WhatsApp reminder claims, service catalog) + competitive gaps for a modern B2B2C platform  
 **Stack:** Next.js App Router · TypeScript · Tailwind · Shadcn/UI · RHF + Zod · PostgreSQL (Prisma / Supabase) · Redis · uazapiGO · Asaas / Stripe  

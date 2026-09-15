@@ -1,0 +1,105 @@
+npm warn Unknown env config "devdir". This will stop working in the next major version of npm.
+
+> trato@0.1.0 build
+> prisma generate && next build --turbopack
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Ô£ö Generated Prisma Client (v6.16.2) to .\node_modules\@prisma\client in 195ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+   Ôû▓ Next.js 15.5.25 (Turbopack)
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ Ô£ô Finished writing to disk in 1279ms
+ Ô£ô Compiled successfully in 11.2s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/50) ...
+   Generating static pages (12/50) 
+   Generating static pages (24/50) 
+   Generating static pages (37/50) 
+ Ô£ô Generating static pages (50/50)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                   Size  First Load JS
+Ôöî Ôùï /                                          0 B         119 kB
+Ôö£ Ôùï /_not-found                                0 B         115 kB
+Ôö£ ãÆ /agendar/[slug]                        8.06 kB         248 kB
+Ôö£ ãÆ /agendar/[slug]/pagamento/[bookingId]  5.24 kB         124 kB
+Ôö£ ãÆ /agendar/[slug]/sucesso                    0 B         119 kB
+Ôö£ ãÆ /api/app/agenda                            0 B            0 B
+Ôö£ ãÆ /api/app/billing                           0 B            0 B
+Ôö£ ãÆ /api/app/bookings/[id]                     0 B            0 B
+Ôö£ ãÆ /api/app/campaigns                         0 B            0 B
+Ôö£ ãÆ /api/app/customers                         0 B            0 B
+Ôö£ ãÆ /api/app/customers/[id]                    0 B            0 B
+Ôö£ ãÆ /api/app/finance                           0 B            0 B
+Ôö£ ãÆ /api/app/membership-plans                  0 B            0 B
+Ôö£ ãÆ /api/app/memberships                       0 B            0 B
+Ôö£ ãÆ /api/app/notifications                     0 B            0 B
+Ôö£ ãÆ /api/app/password                          0 B            0 B
+Ôö£ ãÆ /api/app/reports                           0 B            0 B
+Ôö£ ãÆ /api/app/services                          0 B            0 B
+Ôö£ ãÆ /api/app/services/[id]                     0 B            0 B
+Ôö£ ãÆ /api/app/settings                          0 B            0 B
+Ôö£ ãÆ /api/app/staff                             0 B            0 B
+Ôö£ ãÆ /api/app/staff/[id]                        0 B            0 B
+Ôö£ ãÆ /api/app/staff/[id]/exceptions             0 B            0 B
+Ôö£ ãÆ /api/app/staff/[id]/rules                  0 B            0 B
+Ôö£ ãÆ /api/app/templates                         0 B            0 B
+Ôö£ ãÆ /api/app/upload                            0 B            0 B
+Ôö£ ãÆ /api/app/whatsapp                          0 B            0 B
+Ôö£ ãÆ /api/auth/login                            0 B            0 B
+Ôö£ ãÆ /api/auth/logout                           0 B            0 B
+Ôö£ ãÆ /api/auth/me                               0 B            0 B
+Ôö£ ãÆ /api/auth/signup                           0 B            0 B
+Ôö£ ãÆ /api/bookings                              0 B            0 B
+Ôö£ ãÆ /api/cron/notifications                    0 B            0 B
+Ôö£ ãÆ /api/payments/[bookingId]                  0 B            0 B
+Ôö£ ãÆ /api/payments/[bookingId]/simulate         0 B            0 B
+Ôö£ ãÆ /api/slots                                 0 B            0 B
+Ôö£ ãÆ /api/tenants/[slug]                        0 B            0 B
+Ôö£ ãÆ /api/webhooks/asaas                        0 B            0 B
+Ôö£ ãÆ /api/webhooks/uazapi                       0 B            0 B
+Ôö£ Ôùï /app                                       0 B         115 kB
+Ôö£ ãÆ /app/agenda                               2 kB         155 kB
+Ôö£ ãÆ /app/assinatura                        6.47 kB         122 kB
+Ôö£ ãÆ /app/campanhas                          1.6 kB         132 kB
+Ôö£ ãÆ /app/clientes                          1.96 kB         133 kB
+Ôö£ ãÆ /app/configuracoes                     2.76 kB         134 kB
+Ôö£ ãÆ /app/equipe                            3.51 kB         134 kB
+Ôö£ ãÆ /app/financeiro                        1.58 kB         132 kB
+Ôö£ ãÆ /app/link                              1.13 kB         132 kB
+Ôö£ Ôùï /app/login                             5.95 kB         121 kB
+Ôö£ ãÆ /app/mensalistas                       2.93 kB         134 kB
+Ôö£ ãÆ /app/notificacoes                        944 B         132 kB
+Ôö£ ãÆ /app/novo                              2.16 kB         246 kB
+Ôö£ Ôùï /app/recuperar-senha                       0 B         119 kB
+Ôö£ ãÆ /app/relatorios                        2.19 kB         133 kB
+Ôö£ ãÆ /app/servicos                          2.97 kB         134 kB
+Ôö£ ãÆ /app/temas                             2.22 kB         133 kB
+Ôö£ ãÆ /app/templates                         1.45 kB         132 kB
+Ôö£ ãÆ /app/whatsapp                          1.74 kB         133 kB
+Ôöö Ôùï /comecar                               5.31 kB         121 kB
++ First Load JS shared by all               125 kB
+  Ôö£ chunks/9f66e81998db7823.js             59.2 kB
+  Ôö£ chunks/c20516c263ef3a09.js             17.2 kB
+  Ôöö chunks/cc9fff073fb3d172.js             14.5 kB
+  Ôöö other shared chunks (total)            33.7 kB
+
+
+ãÆ Middleware                               39.2 kB
+
+Ôùï  (Static)   prerendered as static content
+ãÆ  (Dynamic)  server-rendered on demand
+

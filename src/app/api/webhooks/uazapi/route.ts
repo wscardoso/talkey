@@ -138,5 +138,5 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json({ ok: true, service: "trato-uazapi-webhook" });
+  return NextResponse.json({ ok: true, service: "talkey-uazapi-webhook" });
 }

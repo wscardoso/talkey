@@ -130,7 +130,7 @@ export function ConfirmStep({ slug, timezone }: Props) {
           id="confirm-heading"
           className="font-[family-name:var(--font-display)] text-xl tracking-wide text-[var(--fg)]"
         >
-          Confirmar Trato
+          Confirmar horário
         </h2>
         <p className="mt-1 text-sm text-[var(--muted)]">
           Revise os detalhes antes de finalizar
@@ -183,7 +183,7 @@ export function ConfirmStep({ slug, timezone }: Props) {
               Confirmando…
             </span>
           ) : (
-            "Confirmar Trato"
+            "Confirmar horário"
           )}
         </button>
       </div>

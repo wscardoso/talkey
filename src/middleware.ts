@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const SESSION_COOKIE = "trato_session";
+const SESSION_COOKIE = "talkey_session";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

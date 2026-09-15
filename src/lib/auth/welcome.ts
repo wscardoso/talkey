@@ -14,7 +14,7 @@ export function buildWelcomeMessage(params: WelcomeParams): string {
   const loginUrl = `${base}/app/login`;
 
   return [
-    `Bem-vindo ao Trato, ${params.ownerName}!`,
+    `Bem-vindo ao Talkey, ${params.ownerName}!`,
     "",
     `Seu negócio *${params.salonName}* já está ativo.`,
     `Você ganhou ${params.trialDays} dias grátis para usar o sistema.`,
@@ -27,7 +27,7 @@ export function buildWelcomeMessage(params: WelcomeParams): string {
     "",
     `Próximo passo: conecte o WhatsApp em /app/whatsapp para enviar confirmações e lembretes.`,
     "",
-    `Equipe Trato`,
+    `Equipe Talkey`,
   ].join("\n");
 }
 

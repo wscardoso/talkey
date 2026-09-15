@@ -94,7 +94,7 @@ export function BookingWizard({ tenant }: Props) {
       <footer className="mx-auto flex max-w-lg items-center justify-center gap-1.5 px-4 pb-8 text-xs text-[var(--muted)]">
         <span>Agendado com</span>
         <span className="font-[family-name:var(--font-display)] tracking-[0.14em] text-[var(--fg)]">
-          TRATO
+          TALKEY
         </span>
       </footer>
     </div>

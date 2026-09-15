@@ -37,7 +37,7 @@ export default async function DashboardLayout({
               href="/app/agenda"
               className="font-[family-name:var(--font-display)] text-xl tracking-[0.18em] text-[var(--copper)]"
             >
-              TRATO
+              TALKEY
             </Link>
             <p className="truncate text-xs text-[var(--steel)]">
               {tenant?.name ?? "Painel"}

@@ -43,7 +43,7 @@ export async function createAsaasPixCharge(input: {
   ).replace(/\/$/, "");
 
   if (!apiKey) {
-    const fakePayload = `00020126580014br.gov.bcb.pix0136trato-demo-${input.externalRef.slice(0, 8)}520400005303986540${(input.amountCents / 100).toFixed(2)}5802BR5913TRATO DEMO6009SAO PAULO62070503***6304ABCD`;
+    const fakePayload = `00020126580014br.gov.bcb.pix0136talkey-demo-${input.externalRef.slice(0, 8)}520400005303986540${(input.amountCents / 100).toFixed(2)}5802BR5913TALKEY DEMO6009SAO PAULO62070503***6304ABCD`;
     return {
       providerRef: `dry_${input.externalRef}`,
       pixQrCode: fakePayload,

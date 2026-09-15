@@ -16,10 +16,7 @@ ENV DEMO_MODE="false"
 ENV NEXT_TELEMETRY_DISABLED="1"
 
 RUN npx prisma generate
-# #region agent log
-RUN node -e "const os=require('os'); console.log('[debug-ac7443]', JSON.stringify({hypothesisId:'A',location:'Dockerfile:pre-build',message:'builder memory snapshot',data:{freemem:os.freemem(),totalmem:os.totalmem(),cpus:os.cpus().length},timestamp:Date.now()}))"
-# #endregion
-RUN npm run build || (node -e "const os=require('os'); console.error('[debug-ac7443]', JSON.stringify({hypothesisId:'A',location:'Dockerfile:build-failed',message:'npm run build failed',data:{freemem:os.freemem(),totalmem:os.totalmem(),code:process.env.npm_config_},timestamp:Date.now()}))" && exit 1)
+RUN npm run build
 
 FROM node:22-alpine AS runner
 WORKDIR /app

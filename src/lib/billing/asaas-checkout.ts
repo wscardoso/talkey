@@ -27,13 +27,16 @@ export function buildSubExternalRef(params: {
   plan: CheckoutPlan;
   months: number;
 }): string {
-  return `trato-sub:${params.tenantId}:${params.plan}:${params.months}`;
+  return `talkey-sub:${params.tenantId}:${params.plan}:${params.months}`;
 }
 
 export function parseSubExternalRef(
   ref: string | null | undefined,
 ): { tenantId: string; plan: CheckoutPlan; months: number } | null {
-  if (!ref?.startsWith("trato-sub:")) return null;
+  if (!ref) return null;
+  const legacy = ref.startsWith("trato-sub:");
+  const current = ref.startsWith("talkey-sub:");
+  if (!legacy && !current) return null;
   const parts = ref.split(":");
   if (parts.length !== 4) return null;
   const [, tenantId, plan, monthsRaw] = parts;
@@ -104,8 +107,8 @@ export async function createSubscriptionPixCheckout(params: {
     return {
       paymentId: `dry_sub_${params.tenantId.slice(0, 8)}`,
       invoiceUrl: null,
-      pixQrCode: `00020126580014br.gov.bcb.pix0136trato-sub-demo520400005303986540${(valueCents / 100).toFixed(2)}5802BR5913TRATO DEMO6009SAO PAULO62070503***6304ABCD`,
-      pixCopyPaste: `TRATO-SUB-DEMO-${params.plan}-${months}m-${valueCents}`,
+      pixQrCode: `00020126580014br.gov.bcb.pix0136talkey-sub-demo520400005303986540${(valueCents / 100).toFixed(2)}5802BR5913TALKEY DEMO6009SAO PAULO62070503***6304ABCD`,
+      pixCopyPaste: `TALKEY-SUB-DEMO-${params.plan}-${months}m-${valueCents}`,
       valueCents,
       dryRun: true,
       externalReference,
@@ -132,7 +135,7 @@ export async function createSubscriptionPixCheckout(params: {
       customer: customerId,
       billingType: "PIX",
       value: valueCents / 100,
-      description: `Trato ${planMeta.label} — ${months} mês(es)`,
+      description: `Talkey ${planMeta.label} — ${months} mês(es)`,
       externalReference,
     }),
   });

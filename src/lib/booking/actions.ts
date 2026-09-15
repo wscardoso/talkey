@@ -72,7 +72,7 @@ export async function confirmDbBooking(bookingIdOrPrefix: string): Promise<{
     bookingId: updated.id,
     phoneE164: updated.customer.phoneE164,
     status: updated.status,
-    message: "Trato confirmado! Te esperamos no horário marcado.",
+    message: "Agendamento confirmado! Te esperamos no horário marcado.",
   };
 }
 

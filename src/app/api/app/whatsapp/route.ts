@@ -114,7 +114,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const created = await uazapiInitInstance(`trato-${tenant.slug}`);
+    const created = await uazapiInitInstance(`talkey-${tenant.slug}`);
     if (!created.ok || !created.token) {
       return NextResponse.json(
         {

@@ -24,7 +24,7 @@ export default async function SucessoPage({ params, searchParams }: PageProps) {
           ✓
         </div>
         <h1 className="font-[family-name:var(--font-display)] text-3xl tracking-wide text-[var(--fg)]">
-          Trato Feito
+          Confirmado
         </h1>
         <p className="mt-3 text-[var(--muted)]">
           Horário confirmado. Enviamos a confirmação no seu WhatsApp.

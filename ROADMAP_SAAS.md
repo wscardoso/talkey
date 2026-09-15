@@ -1,4 +1,4 @@
-# Trato — Roadmap SaaS (fases A → B → C)
+# Talkey — Roadmap SaaS (fases A → B → C)
 
 Gerado a partir do inventário real do repo. Não reescreve booking/agenda.
 
@@ -162,7 +162,7 @@ Tenant inadimplente pode ser desativado; limites starter documentados e enforced
 - Chave Asaas do tenant (se depósito)
 - Criar o Tenant + OWNER inicial (até Fase B)
 - Coolify: `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` + bucket público `tenant-media`
-- Webhook Asaas apontando para `/api/webhooks/asaas` (depósito + `trato-sub:`)
+- Webhook Asaas apontando para `/api/webhooks/asaas` (depósito + `talkey-sub:`; legado `trato-sub:` ainda aceito)
 
 ---
 
@@ -174,7 +174,7 @@ Itens capturados fora do escopo A→B→C atual. **Não estão alocados a nenhum
 - Aba/seção de perfil: foto/logo (upload usável, não só URL), endereço, aparência (marca), e troca de senha do OWNER
 - Separar mentalmente “conta” (e-mail/senha) de “salão” (logo, endereço, brand) se a UX pedir
 - Hoje `/app/configuracoes` já cobre parte disso (nome, endereço, cor, `logoUrl`); troca de senha ✅; falta polish de mídia avançada
-- **Tema no painel do dono:** hoje `brandPrimary` / presets em `/app/temas` afetam só a página pública (`/agendar/{slug}`). Futuro: opcionalmente aplicar a cor do tenant no shell do `/app` (nav ativa, CTAs, acentos), sem trocar a marca TRATO do produto — decidir UX (só acentos vs. shell inteiro)
+- **Tema no painel do dono:** hoje `brandPrimary` / presets em `/app/temas` afetam só a página pública (`/agendar/{slug}`). Futuro: opcionalmente aplicar a cor do tenant no shell do `/app` (nav ativa, CTAs, acentos), sem trocar a marca TALKEY do produto — decidir UX (só acentos vs. shell inteiro)
 
 ### Relatórios avançados
 - Gráficos de pico de horários
@@ -197,7 +197,7 @@ Itens capturados fora do escopo A→B→C atual. **Não estão alocados a nenhum
 ## Prompt curto — implementar só Fase A (Agent)
 
 ```text
-Implemente SOMENTE a Fase A do ROADMAP_SAAS.md no repo Trato.
+Implemente SOMENTE a Fase A do ROADMAP_SAAS.md no repo Talkey.
 
 IN: CRUD owner de /app/servicos, /app/equipe (staff + StaffService + AvailabilityRule + AvailabilityException), /app/configuracoes (campos seguros do Tenant). APIs /api/app/* com requireOwnerApi e filtro tenantId. Zod em src/lib/validations/owner.ts. Atualizar app-nav. Soft-deactivate em vez de hard-delete se houver bookings. UI no padrão customers-board (Tailwind + CSS vars, PT-BR, mobile-first). Sem migration nova.
 

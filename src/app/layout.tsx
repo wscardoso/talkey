@@ -17,12 +17,12 @@ const sans = DM_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Trato — agendamento com compromisso",
-    template: "%s · Trato",
+    default: "Talkey — agendamento com compromisso",
+    template: "%s · Talkey",
   },
   description:
-    "Trato: dar um trato no visual e manter o horário. Agendamento online para barbearias e salões.",
-  applicationName: "Trato",
+    "Talkey: agendamento online para barbearias e salões, com WhatsApp e horário cumprido.",
+  applicationName: "Talkey",
 };
 
 export default function RootLayout({

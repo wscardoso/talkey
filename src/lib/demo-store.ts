@@ -414,6 +414,6 @@ export function confirmDemoBooking(bookingIdOrPrefix: string): {
   return {
     ok: true,
     booking,
-    message: "Trato confirmado! Te esperamos no horário marcado.",
+    message: "Agendamento confirmado! Te esperamos no horário marcado.",
   };
 }

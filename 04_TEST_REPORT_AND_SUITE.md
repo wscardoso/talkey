@@ -1,6 +1,6 @@
 # 04 — Test Report & Suite (Booking Edge-Case Audit)
 
-**Product:** Trato — multi-tenant Booking SaaS (Barber / Beauty)  
+**Product:** Talkey — multi-tenant Booking SaaS (Barber / Beauty)
 **Workspace:** `agente barbearia`  
 **Stack under test:** Next.js 15 App Router · Prisma/PostgreSQL · Redis locks (ioredis, in-memory fallback) · Zod · Luxon · WhatsApp via `NotificationLog` (no BullMQ)  
 **Audit date:** 2026-09-04  

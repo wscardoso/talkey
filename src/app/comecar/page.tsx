@@ -3,7 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { TratoMark } from "@/components/brand/trato-mark";
+import { TalkeyMark } from "@/components/brand/talkey-mark";
 import { slugifyTenantName } from "@/lib/slugify";
 
 const inputClass =
@@ -77,7 +77,7 @@ export default function ComecarPage() {
       />
       <div className="relative z-10 mx-auto w-full max-w-md">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <TratoMark className="h-10 w-10 text-[var(--copper)]" />
+          <TalkeyMark className="h-10 w-10 text-[var(--copper)]" />
           <h1 className="font-[family-name:var(--font-display)] text-4xl tracking-[0.18em]">
             COMEÇAR
           </h1>
