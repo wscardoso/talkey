@@ -196,6 +196,15 @@ export function SettingsForm() {
             />
           </Field>
         </div>
+        <Field label="URL do logo">
+          <input
+            className={inputClass}
+            value={settings.logoUrl ?? ""}
+            onChange={(e) => patch("logoUrl", e.target.value || null)}
+            placeholder="https://…"
+            inputMode="url"
+          />
+        </Field>
       </section>
 
       <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--lead)] p-4">

@@ -14,6 +14,7 @@ type ServiceRow = {
   isActive: boolean;
   requiresDeposit: boolean;
   sortOrder: number;
+  imageUrl: string | null;
 };
 
 const emptyForm = {
@@ -25,6 +26,7 @@ const emptyForm = {
   category: "",
   requiresDeposit: false,
   isActive: true,
+  imageUrl: "",
 };
 
 export function ServicesBoard() {
@@ -67,6 +69,7 @@ export function ServicesBoard() {
       category: s.category ?? "",
       requiresDeposit: s.requiresDeposit,
       isActive: s.isActive,
+      imageUrl: s.imageUrl ?? "",
     });
     setError(null);
   };
@@ -101,6 +104,7 @@ export function ServicesBoard() {
       category: form.category,
       requiresDeposit: form.requiresDeposit,
       isActive: form.isActive,
+      imageUrl: form.imageUrl.trim() || "",
     };
 
     const res = editing
@@ -251,6 +255,17 @@ export function ServicesBoard() {
                     setForm((f) => ({ ...f, category: e.target.value }))
                   }
                   className={inputClass}
+                />
+              </Field>
+              <Field label="URL da imagem (opcional)">
+                <input
+                  value={form.imageUrl}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, imageUrl: e.target.value }))
+                  }
+                  className={inputClass}
+                  placeholder="https://…"
+                  inputMode="url"
                 />
               </Field>
               <label className="flex items-center gap-2 text-sm">

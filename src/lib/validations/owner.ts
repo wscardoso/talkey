@@ -36,6 +36,9 @@ export const createServiceSchema = z.object({
   requiresDeposit: z.boolean().optional().default(false),
   sortOrder: z.coerce.number().int().min(0).max(999).optional().default(0),
   isActive: z.boolean().optional().default(true),
+  imageUrl: z
+    .union([z.literal(""), z.null(), z.string().trim().url()])
+    .optional(),
 });
 
 export const updateServiceSchema = createServiceSchema.partial();

@@ -152,7 +152,7 @@ Tenant inadimplente pode ser desativado; limites starter documentados e enforced
 7. **PR-C1** — billing/gating + expiração de trial
 8. **PR-D1** — campanhas ou resumos avançados ✅
 9. **PR-D2** — mensalistas ✅
-10. **PR-D3** — temas + biblioteca de mídias
+10. **PR-D3** — temas + biblioteca de mídias ✅ (URL de logo/imagem; upload Storage depois)
 
 ## Continua manual na Fase A
 - Criar instância WhatsApp (uazapi) e colar `waInstanceId`

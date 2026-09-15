@@ -75,6 +75,7 @@ export async function getPublicTenant(
       durationMin: s.durationMin,
       priceCents: s.priceCents,
       category: s.category,
+      imageUrl: s.imageUrl,
     })),
     staff: tenant.staff.map((s) => ({
       id: s.id,

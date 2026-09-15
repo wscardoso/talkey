@@ -34,6 +34,7 @@ export type PublicService = {
   priceCents: number;
   currency: string;
   category: string | null;
+  imageUrl: string | null;
   staffIds: string[];
 };
 
@@ -81,6 +82,7 @@ export async function getTenantBySlug(
         priceCents: s.priceCents,
         currency: "BRL",
         category: s.category,
+        imageUrl: null,
         staffIds,
       })),
       staff: demo.staff.map((s) => ({
@@ -154,6 +156,7 @@ export async function getTenantBySlug(
       priceCents: s.priceCents,
       currency: s.currency,
       category: s.category,
+      imageUrl: s.imageUrl,
       staffIds: staffIdsByService.get(s.id) ?? [],
     })),
     staff: tenant.staff.map((s) => ({

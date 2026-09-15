@@ -27,6 +27,7 @@ export async function GET() {
       isActive: s.isActive,
       requiresDeposit: s.requiresDeposit,
       sortOrder: s.sortOrder,
+      imageUrl: s.imageUrl,
     })),
   });
 }
@@ -57,6 +58,7 @@ export async function POST(request: Request) {
       requiresDeposit: data.requiresDeposit,
       sortOrder: data.sortOrder,
       isActive: data.isActive,
+      imageUrl: data.imageUrl ? data.imageUrl : null,
     },
   });
 

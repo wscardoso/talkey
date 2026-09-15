@@ -58,6 +58,9 @@ export async function PATCH(request: Request, ctx: Ctx) {
         : {}),
       ...(data.sortOrder !== undefined ? { sortOrder: data.sortOrder } : {}),
       ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
+      ...(data.imageUrl !== undefined
+        ? { imageUrl: data.imageUrl || null }
+        : {}),
     },
   });
 

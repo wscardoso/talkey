@@ -37,14 +37,22 @@ export function ServiceStep({ services }: Props) {
                 aria-selected={selected}
                 onClick={() => selectService(s)}
                 className={cn(
-                  "group flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3.5 text-left transition-all duration-200",
+                  "group flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200",
                   "min-h-[72px] active:scale-[0.99]",
                   selected
                     ? "border-[var(--brand)] bg-[var(--brand-soft)] shadow-[0_0_0_1px_var(--brand)]"
                     : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--brand)]/50",
                 )}
               >
-                <div className="min-w-0">
+                {s.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={s.imageUrl}
+                    alt=""
+                    className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                  />
+                ) : null}
+                <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-[var(--fg)]">
                     {s.name}
                   </p>

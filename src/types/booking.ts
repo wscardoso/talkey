@@ -5,6 +5,7 @@ export type PublicService = {
   durationMin: number;
   priceCents: number;
   category: string | null;
+  imageUrl?: string | null;
 };
 
 export type PublicStaff = {
