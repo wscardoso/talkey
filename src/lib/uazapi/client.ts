@@ -181,3 +181,23 @@ export async function uazapiDisconnect(instanceToken: string): Promise<{
   }
   return { ok: true };
 }
+
+export async function uazapiSendText(
+  instanceToken: string,
+  number: string,
+  text: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const res = await uazapiFetch("/send/text", {
+    method: "POST",
+    token: instanceToken,
+    body: {
+      number: number.replace(/\D/g, ""),
+      text,
+      linkPreview: false,
+    },
+  });
+  if (!res.ok) {
+    return { ok: false, error: `HTTP_${res.status}: ${res.text}`.slice(0, 300) };
+  }
+  return { ok: true };
+}

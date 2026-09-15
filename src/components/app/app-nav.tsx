@@ -16,6 +16,7 @@ import {
   Bell,
   FileText,
   CreditCard,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +29,7 @@ const LINKS = [
   { href: "/app/clientes", label: "Clientes", icon: Users },
   { href: "/app/financeiro", label: "Financeiro", icon: Wallet },
   { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
+  { href: "/app/campanhas", label: "Campanhas", icon: Megaphone },
   { href: "/app/whatsapp", label: "WhatsApp", icon: MessageCircle },
   { href: "/app/templates", label: "Templates", icon: FileText },
   { href: "/app/notificacoes", label: "Alertas", icon: Bell },
