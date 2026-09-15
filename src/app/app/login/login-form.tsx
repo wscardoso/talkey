@@ -24,13 +24,20 @@ export default function LoginForm() {
       });
       const data = (await res.json().catch(() => ({}))) as {
         message?: string;
+        billing?: { allowed?: boolean };
       };
       if (!res.ok) {
         setError(data.message ?? "Falha no login");
         return;
       }
       const next = searchParams.get("next") || "/app/agenda";
-      router.replace(next.startsWith("/app") ? next : "/app/agenda");
+      const dest =
+        data.billing && data.billing.allowed === false
+          ? "/app/assinatura?blocked=1"
+          : next.startsWith("/app")
+            ? next
+            : "/app/agenda";
+      router.replace(dest);
       router.refresh();
     } catch {
       setError("Não foi possível conectar. Tente de novo.");

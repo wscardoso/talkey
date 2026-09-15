@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireOwnerSession } from "@/lib/auth/require-owner";
+import { syncTenantAccess } from "@/lib/billing/access";
 import { prisma } from "@/lib/prisma";
 import { AppNav } from "@/components/app/app-nav";
 import { LogoutButton } from "@/components/app/logout-button";
@@ -10,10 +11,13 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await requireOwnerSession();
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: session.tenantId },
-    select: { name: true },
-  });
+  const [tenant, access] = await Promise.all([
+    prisma.tenant.findUnique({
+      where: { id: session.tenantId },
+      select: { name: true, plan: true },
+    }),
+    syncTenantAccess(session.tenantId),
+  ]);
 
   return (
     <div className="min-h-dvh bg-[var(--graphite)] text-[var(--offwhite)]">
@@ -39,7 +43,17 @@ export default async function DashboardLayout({
               {tenant?.name ?? "Painel"}
             </p>
           </div>
-          <LogoutButton />
+          <div className="flex items-center gap-2">
+            {access.plan === "trial" && access.daysLeft != null ? (
+              <Link
+                href="/app/assinatura"
+                className="rounded-full bg-[color-mix(in_srgb,var(--copper)_22%,transparent)] px-3 py-1 text-[11px] font-semibold text-[var(--copper)]"
+              >
+                Trial · {Math.max(0, access.daysLeft)}d
+              </Link>
+            ) : null}
+            <LogoutButton />
+          </div>
         </div>
       </header>
 

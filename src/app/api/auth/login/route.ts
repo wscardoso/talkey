@@ -41,10 +41,21 @@ export async function POST(request: Request) {
       isActive: true,
       role: { in: ["OWNER", "MANAGER", "SUPER_ADMIN"] },
     },
-    include: { tenant: { select: { id: true, slug: true, isActive: true } } },
+    include: {
+      tenant: {
+        select: {
+          id: true,
+          slug: true,
+          isActive: true,
+          plan: true,
+          trialEndsAt: true,
+          subscriptionEndsAt: true,
+        },
+      },
+    },
   });
 
-  if (!user || !user.tenant.isActive) {
+  if (!user) {
     return NextResponse.json(
       { error: "INVALID_CREDENTIALS", message: "E-mail ou senha incorretos" },
       { status: 401 },
@@ -55,6 +66,17 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "INVALID_CREDENTIALS", message: "E-mail ou senha incorretos" },
       { status: 401 },
+    );
+  }
+
+  const { syncTenantAccess } = await import("@/lib/billing/access");
+  const access = await syncTenantAccess(user.tenantId);
+
+  // Allow login even if expired — UI sends them to /app/assinatura
+  if (!user.tenant.isActive && access.reason === "inactive" && access.plan !== "expired") {
+    return NextResponse.json(
+      { error: "TENANT_INACTIVE", message: "Conta desativada. Fale com o suporte." },
+      { status: 403 },
     );
   }
 
@@ -78,6 +100,13 @@ export async function POST(request: Request) {
       role: user.role,
       tenantId: user.tenantId,
       tenantSlug: user.tenant.slug,
+    },
+    billing: {
+      allowed: access.allowed,
+      plan: access.plan,
+      daysLeft: access.daysLeft,
+      reason: access.reason,
+      message: access.message,
     },
   });
   res.cookies.set(SESSION_COOKIE, token, sessionCookieOptions());

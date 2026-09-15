@@ -1,11 +1,14 @@
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { getSession, type SessionPayload } from "@/lib/auth/session";
+import { syncTenantAccess } from "@/lib/billing/access";
 import { prisma } from "@/lib/prisma";
 
 const OWNER_ROLES = new Set(["OWNER", "MANAGER", "SUPER_ADMIN"]);
 
-export async function requireOwnerSession(): Promise<SessionPayload> {
+export async function requireOwnerSession(options?: {
+  allowExpiredBilling?: boolean;
+}): Promise<SessionPayload> {
   const session = await getSession();
   if (!session || !OWNER_ROLES.has(session.role)) {
     redirect("/app/login");
@@ -24,10 +27,19 @@ export async function requireOwnerSession(): Promise<SessionPayload> {
     redirect("/app/login");
   }
 
+  if (!options?.allowExpiredBilling) {
+    const access = await syncTenantAccess(session.tenantId);
+    if (!access.allowed) {
+      redirect("/app/assinatura?blocked=1");
+    }
+  }
+
   return session;
 }
 
-export async function requireOwnerApi(): Promise<
+export async function requireOwnerApi(options?: {
+  allowExpiredBilling?: boolean;
+}): Promise<
   { ok: true; session: SessionPayload } | { ok: false; response: NextResponse }
 > {
   const session = await getSession();
@@ -58,6 +70,23 @@ export async function requireOwnerApi(): Promise<
         { status: 401 },
       ),
     };
+  }
+
+  if (!options?.allowExpiredBilling) {
+    const access = await syncTenantAccess(session.tenantId);
+    if (!access.allowed) {
+      return {
+        ok: false,
+        response: NextResponse.json(
+          {
+            error: "PAYMENT_REQUIRED",
+            message: access.message,
+            reason: access.reason,
+          },
+          { status: 402 },
+        ),
+      };
+    }
   }
 
   return { ok: true, session };

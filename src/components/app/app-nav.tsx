@@ -15,6 +15,7 @@ import {
   MessageCircle,
   Bell,
   FileText,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,7 @@ const LINKS = [
   { href: "/app/whatsapp", label: "WhatsApp", icon: MessageCircle },
   { href: "/app/templates", label: "Templates", icon: FileText },
   { href: "/app/notificacoes", label: "Alertas", icon: Bell },
+  { href: "/app/assinatura", label: "Plano", icon: CreditCard },
   { href: "/app/configuracoes", label: "Config", icon: Settings },
 ] as const;
 
