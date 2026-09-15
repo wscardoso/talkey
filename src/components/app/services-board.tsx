@@ -129,6 +129,24 @@ export function ServicesBoard() {
     await load();
   };
 
+  const uploadImage = async (file: File) => {
+    setSaving(true);
+    setError(null);
+    const body = new FormData();
+    body.set("kind", "service");
+    body.set("file", file);
+    const res = await fetch("/api/app/upload", { method: "POST", body });
+    const data = await res.json().catch(() => ({}));
+    setSaving(false);
+    if (!res.ok) {
+      setError(data.message ?? "Falha no upload");
+      return;
+    }
+    if (typeof data.url === "string") {
+      setForm((f) => ({ ...f, imageUrl: data.url }));
+    }
+  };
+
   const deactivate = async (s: ServiceRow) => {
     const res = await fetch(`/api/app/services/${s.id}`, { method: "DELETE" });
     if (!res.ok) return;
@@ -256,6 +274,27 @@ export function ServicesBoard() {
                   }
                   className={inputClass}
                 />
+              </Field>
+              <Field label="Imagem do serviço">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="block w-full text-sm text-[var(--steel)] file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--copper)] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--graphite)]"
+                  disabled={saving}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void uploadImage(file);
+                    e.target.value = "";
+                  }}
+                />
+                {form.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={form.imageUrl}
+                    alt=""
+                    className="mt-2 h-20 w-20 rounded-lg object-cover"
+                  />
+                ) : null}
               </Field>
               <Field label="URL da imagem (opcional)">
                 <input

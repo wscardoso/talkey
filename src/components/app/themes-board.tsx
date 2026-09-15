@@ -29,6 +29,8 @@ export function ThemesBoard() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [uploading, setUploading] = useState(false);
+
   const load = useCallback(async () => {
     const res = await fetch("/api/app/settings");
     const data = await res.json();
@@ -68,6 +70,25 @@ export function ThemesBoard() {
       return;
     }
     setMessage("Tema atualizado");
+  };
+
+  const uploadLogo = async (file: File) => {
+    setUploading(true);
+    setError(null);
+    setMessage(null);
+    const body = new FormData();
+    body.set("kind", "logo");
+    body.set("file", file);
+    const res = await fetch("/api/app/upload", { method: "POST", body });
+    const data = await res.json().catch(() => ({}));
+    setUploading(false);
+    if (!res.ok) {
+      setError(data.message ?? "Falha no upload");
+      return;
+    }
+    if (typeof data.url === "string") {
+      await save({ logoUrl: data.url });
+    }
   };
 
   if (loading || !settings) {
@@ -177,7 +198,26 @@ export function ThemesBoard() {
         </label>
         <label className="block">
           <span className="text-xs uppercase tracking-wider text-[var(--steel)]">
-            URL do logo
+            Logo
+          </span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="mt-1 block w-full text-sm text-[var(--steel)] file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--copper)] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--graphite)]"
+            disabled={uploading || saving}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void uploadLogo(file);
+              e.target.value = "";
+            }}
+          />
+          <p className="mt-1 text-xs text-[var(--steel)]">
+            JPEG, PNG ou WebP até 2 MB.
+          </p>
+        </label>
+        <label className="block">
+          <span className="text-xs uppercase tracking-wider text-[var(--steel)]">
+            URL do logo (opcional)
           </span>
           <input
             className={`${inputClass} mt-1`}
@@ -190,9 +230,6 @@ export function ThemesBoard() {
             placeholder="https://…"
             inputMode="url"
           />
-          <p className="mt-1 text-xs text-[var(--steel)]">
-            Cole um link público da imagem. Upload direto chega em breve.
-          </p>
         </label>
         <button
           type="button"
