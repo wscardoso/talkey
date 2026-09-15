@@ -17,6 +17,7 @@ import {
   FileText,
   CreditCard,
   Megaphone,
+  BadgeCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +28,7 @@ const LINKS = [
   { href: "/app/equipe", label: "Equipe", icon: UserRound },
   { href: "/app/servicos", label: "Serviços", icon: Scissors },
   { href: "/app/clientes", label: "Clientes", icon: Users },
+  { href: "/app/mensalistas", label: "Mensalistas", icon: BadgeCheck },
   { href: "/app/financeiro", label: "Financeiro", icon: Wallet },
   { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
   { href: "/app/campanhas", label: "Campanhas", icon: Megaphone },

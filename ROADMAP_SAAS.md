@@ -150,8 +150,8 @@ Tenant inadimplente pode ser desativado; limites starter documentados e enforced
 5. **PR-B2** — `/app/whatsapp` com QR Code / pairing e status (uazapi)
 6. **PR-B3** — templates de mensagem + toggles de notificações
 7. **PR-C1** — billing/gating + expiração de trial
-8. **PR-D1** — campanhas ou resumos avançados
-9. **PR-D2** — mensalistas
+8. **PR-D1** — campanhas ou resumos avançados ✅
+9. **PR-D2** — mensalistas ✅
 10. **PR-D3** — temas + biblioteca de mídias
 
 ## Continua manual na Fase A
