@@ -9,6 +9,9 @@ import {
   Users,
   Wallet,
   BarChart3,
+  Scissors,
+  UserRound,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,9 +19,12 @@ const LINKS = [
   { href: "/app/agenda", label: "Agenda", icon: CalendarDays },
   { href: "/app/novo", label: "Novo", icon: PlusCircle },
   { href: "/app/link", label: "Link", icon: Link2 },
+  { href: "/app/equipe", label: "Equipe", icon: UserRound },
+  { href: "/app/servicos", label: "Serviços", icon: Scissors },
   { href: "/app/clientes", label: "Clientes", icon: Users },
   { href: "/app/financeiro", label: "Financeiro", icon: Wallet },
   { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
+  { href: "/app/configuracoes", label: "Config", icon: Settings },
 ] as const;
 
 const PRIMARY = new Set(["/app/agenda", "/app/novo", "/app/link"]);

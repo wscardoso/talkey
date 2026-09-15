@@ -21,6 +21,23 @@ const STAFF_IDS = {
   diego: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2",
 } as const;
 
+/** Second tenant — Taynara Batista Nails Design (additive; do not remap Dom Carlos). */
+const NAILS_SERVICE_IDS = {
+  aplicacao: "cccccccc-cccc-4ccc-8ccc-ccccccccccc1",
+  manutencao: "cccccccc-cccc-4ccc-8ccc-ccccccccccc2",
+  blindagem: "cccccccc-cccc-4ccc-8ccc-ccccccccccc3",
+  esmaltacao: "cccccccc-cccc-4ccc-8ccc-ccccccccccc4",
+  pe: "cccccccc-cccc-4ccc-8ccc-ccccccccccc5",
+  mao: "cccccccc-cccc-4ccc-8ccc-ccccccccccc6",
+  spaPes: "cccccccc-cccc-4ccc-8ccc-ccccccccccc7",
+  remocao: "cccccccc-cccc-4ccc-8ccc-ccccccccccc8",
+  reposicao: "cccccccc-cccc-4ccc-8ccc-ccccccccccc9",
+} as const;
+
+const NAILS_STAFF_IDS = {
+  taynara: "dddddddd-dddd-4ddd-8ddd-ddddddddddd1",
+} as const;
+
 /** Legacy non-RFC IDs from the first seed — remap in place when present. */
 const LEGACY_SERVICE_IDS: Array<{ from: string; to: string }> = [
   { from: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1", to: SERVICE_IDS.corteSocial },
@@ -318,6 +335,214 @@ async function main() {
 
   console.log("Seed OK → /agendar/dom-carlos-barbearia");
   console.log("Owner login → /app/login (dono@domcarlos.local)");
+
+  // --- Tenant 2: Taynara Batista - Nails Design (additive only) ---
+  const nailsTenant = await prisma.tenant.upsert({
+    where: { slug: "taynara-batista-nails" },
+    update: {
+      addressLine1: "Av. Gradenor Faustino de Melo, 207",
+      city: "Iapu",
+      state: "MG",
+      postalCode: "35190-000",
+    },
+    create: {
+      slug: "taynara-batista-nails",
+      name: "Taynara Batista - Nails Design",
+      timezone: "America/Sao_Paulo",
+      addressLine1: "Av. Gradenor Faustino de Melo, 207",
+      city: "Iapu",
+      state: "MG",
+      postalCode: "35190-000",
+      brandPrimary: "#B76E79",
+      slotIntervalMin: 15,
+      minLeadMin: 30,
+      maxAdvanceDays: 45,
+      bufferBeforeMin: 0,
+      bufferAfterMin: 5,
+      waProvider: "uazapi",
+      waInstanceId: process.env.UAZAPI_TOKEN || null,
+      depositRequired: process.env.DEPOSIT_REQUIRED === "true",
+      depositPercent: Number(process.env.DEPOSIT_PERCENT ?? "30") || 30,
+      paymentProvider: process.env.ASAAS_API_KEY ? "ASAAS" : "PIX_MANUAL",
+      asaasApiKeyEnc: process.env.ASAAS_API_KEY || null,
+    },
+  });
+
+  // Durations are typical nail-design estimates (not provided by the salon).
+  const nailsServiceDefs = [
+    {
+      id: NAILS_SERVICE_IDS.aplicacao,
+      name: "Aplicação",
+      durationMin: 90,
+      priceCents: 13000,
+      category: "Unhas",
+      sortOrder: 1,
+    },
+    {
+      id: NAILS_SERVICE_IDS.manutencao,
+      name: "Manutenção",
+      durationMin: 60,
+      priceCents: 9000,
+      category: "Unhas",
+      sortOrder: 2,
+    },
+    {
+      id: NAILS_SERVICE_IDS.blindagem,
+      name: "Blindagem / banhogel",
+      durationMin: 45,
+      priceCents: 8000,
+      category: "Unhas",
+      sortOrder: 3,
+    },
+    {
+      id: NAILS_SERVICE_IDS.esmaltacao,
+      name: "Esmaltação em gel",
+      durationMin: 40,
+      priceCents: 4000,
+      category: "Unhas",
+      sortOrder: 4,
+    },
+    {
+      id: NAILS_SERVICE_IDS.pe,
+      name: "Pé",
+      durationMin: 30,
+      priceCents: 2000,
+      category: "Pés",
+      sortOrder: 5,
+    },
+    {
+      id: NAILS_SERVICE_IDS.mao,
+      name: "Mão",
+      durationMin: 30,
+      priceCents: 2000,
+      category: "Mãos",
+      sortOrder: 6,
+    },
+    {
+      id: NAILS_SERVICE_IDS.spaPes,
+      name: "Spa dos pés",
+      durationMin: 45,
+      priceCents: 5000,
+      category: "Pés",
+      sortOrder: 7,
+    },
+    {
+      id: NAILS_SERVICE_IDS.remocao,
+      name: "Remoção",
+      durationMin: 30,
+      priceCents: 3000,
+      category: "Unhas",
+      sortOrder: 8,
+    },
+    {
+      id: NAILS_SERVICE_IDS.reposicao,
+      name: "Reposição (unidade)",
+      durationMin: 15,
+      priceCents: 500,
+      category: "Unhas",
+      sortOrder: 9,
+    },
+  ] as const;
+
+  const nailsServices = [];
+  for (const svc of nailsServiceDefs) {
+    nailsServices.push(
+      await prisma.service.upsert({
+        where: { id: svc.id },
+        update: {},
+        create: {
+          id: svc.id,
+          tenantId: nailsTenant.id,
+          name: svc.name,
+          durationMin: svc.durationMin,
+          bufferAfterMin: 5,
+          priceCents: svc.priceCents,
+          category: svc.category,
+          sortOrder: svc.sortOrder,
+        },
+      }),
+    );
+  }
+
+  const taynara = await prisma.staff.upsert({
+    where: { id: NAILS_STAFF_IDS.taynara },
+    update: {},
+    create: {
+      id: NAILS_STAFF_IDS.taynara,
+      tenantId: nailsTenant.id,
+      displayName: "Taynara Batista",
+      bio: "Nails Design",
+      color: "#B76E79",
+      sortOrder: 1,
+    },
+  });
+
+  for (const service of nailsServices) {
+    await prisma.staffService.upsert({
+      where: {
+        staffId_serviceId: {
+          staffId: taynara.id,
+          serviceId: service.id,
+        },
+      },
+      update: {},
+      create: {
+        staffId: taynara.id,
+        serviceId: service.id,
+        tenantId: nailsTenant.id,
+      },
+    });
+  }
+
+  for (const day of WEEKDAYS) {
+    const existing = await prisma.availabilityRule.findFirst({
+      where: {
+        staffId: taynara.id,
+        dayOfWeek: day,
+        startTime: "09:00",
+      },
+    });
+    if (!existing) {
+      await prisma.availabilityRule.create({
+        data: {
+          tenantId: nailsTenant.id,
+          staffId: taynara.id,
+          dayOfWeek: day,
+          startTime: "09:00",
+          endTime: day === "SAT" ? "14:00" : "19:00",
+          breakStart: day === "SAT" ? null : "12:00",
+          breakEnd: day === "SAT" ? null : "13:00",
+          isActive: true,
+        },
+      });
+    }
+  }
+
+  await prisma.user.upsert({
+    where: {
+      tenantId_email: {
+        tenantId: nailsTenant.id,
+        email: "dono@taynarabatista.local",
+      },
+    },
+    update: {
+      name: "Taynara Batista",
+      role: "OWNER",
+      isActive: true,
+      passwordHash,
+    },
+    create: {
+      tenantId: nailsTenant.id,
+      email: "dono@taynarabatista.local",
+      name: "Taynara Batista",
+      role: "OWNER",
+      isActive: true,
+      passwordHash,
+    },
+  });
+
+  console.log("Seed OK → /agendar/taynara-batista-nails");
+  console.log("Owner login → /app/login (dono@taynarabatista.local)");
 }
 
 main()
