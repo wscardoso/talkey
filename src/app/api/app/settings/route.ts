@@ -70,6 +70,13 @@ export async function PATCH(request: Request) {
   }
 
   const data = parsed.data;
+  const themeTouched =
+    data.brandPrimary !== undefined || data.logoUrl !== undefined;
+  if (themeTouched) {
+    const themeAuth = await requireOwnerApi({ feature: "themes" });
+    if (!themeAuth.ok) return themeAuth.response;
+  }
+
   const blankToNull = (v: string | null | undefined) =>
     !v || v === "" ? null : v;
 

@@ -59,6 +59,11 @@ export async function GET() {
       priceLabel: `${formatPlanPrice(PLANS[id].priceCents)}/mês`,
       priceCents: PLANS[id].priceCents,
     })),
+    features: {
+      starter: [],
+      pro: ["campaigns", "memberships", "themes"],
+      trial: ["campaigns", "memberships", "themes"],
+    },
     canSelfActivate: Boolean(process.env.BILLING_ACTIVATE_SECRET),
     canCheckout: true,
   });

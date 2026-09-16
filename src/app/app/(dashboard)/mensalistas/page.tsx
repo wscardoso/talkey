@@ -1,6 +1,9 @@
+import { requireOwnerSession } from "@/lib/auth/require-owner";
 import { MembershipsBoard } from "@/components/app/memberships-board";
 
-export default function MensalistasPage() {
+export default async function MensalistasPage() {
+  await requireOwnerSession({ feature: "memberships" });
+
   return (
     <div className="space-y-5">
       <header>

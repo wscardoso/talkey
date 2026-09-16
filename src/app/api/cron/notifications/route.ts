@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isDemoMode } from "@/lib/demo-store";
+import { expireLapsedTenants } from "@/lib/billing/access";
 import { processQueuedNotifications } from "@/lib/whatsapp";
 
 export const runtime = "nodejs";
@@ -27,10 +28,21 @@ export async function POST(request: Request) {
   }
 
   const { expireStaleDeposits } = await import("@/lib/payments/deposit");
-  const expired = await expireStaleDeposits(50);
+  const expiredDeposits = await expireStaleDeposits(50);
+  const expiredTenants = await expireLapsedTenants(100);
   const result = await processQueuedNotifications(20);
-  console.info("[cron:notifications]", { ...result, expired });
-  return NextResponse.json({ ok: true, expired, ...result });
+  console.info("[cron:notifications]", {
+    ...result,
+    expiredDeposits,
+    expiredTenants,
+  });
+  return NextResponse.json({
+    ok: true,
+    expired: expiredDeposits,
+    expiredDeposits,
+    expiredTenants,
+    ...result,
+  });
 }
 
 export async function GET(request: Request) {

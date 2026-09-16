@@ -1,6 +1,9 @@
+import { requireOwnerSession } from "@/lib/auth/require-owner";
 import { CampaignsBoard } from "@/components/app/campaigns-board";
 
-export default function CampanhasPage() {
+export default async function CampanhasPage() {
+  await requireOwnerSession({ feature: "campaigns" });
+
   return (
     <div className="space-y-5">
       <header>

@@ -6,7 +6,7 @@ Multi-tenant booking SaaS for barbershops and salons (WhatsApp, agenda, billing)
 
 - Brand: [`03_BRAND_TALKEY.md`](./03_BRAND_TALKEY.md)
 - Deploy: [`DEPLOY.md`](./DEPLOY.md) → `talkey.digitallforcelabs.cloud`
-- Roadmap: [`ROADMAP_SAAS.md`](./ROADMAP_SAAS.md)
+- Roadmap: [`ROADMAP_SAAS.md`](./ROADMAP_SAAS.md) (Fase C concluída)
 
 ## Stack
 

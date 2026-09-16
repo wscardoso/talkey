@@ -1,6 +1,9 @@
+import { requireOwnerSession } from "@/lib/auth/require-owner";
 import { ThemesBoard } from "@/components/app/themes-board";
 
-export default function TemasPage() {
+export default async function TemasPage() {
+  await requireOwnerSession({ feature: "themes" });
+
   return (
     <div className="space-y-5">
       <header>

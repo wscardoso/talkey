@@ -41,6 +41,11 @@ export async function POST(request: Request) {
   }
   const kind = kindParsed.data as MediaKind;
 
+  if (kind === "logo") {
+    const themeAuth = await requireOwnerApi({ feature: "themes" });
+    if (!themeAuth.ok) return themeAuth.response;
+  }
+
   const file = form.get("file");
   if (!(file instanceof File)) {
     return NextResponse.json(

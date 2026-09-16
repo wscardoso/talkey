@@ -16,7 +16,7 @@ const planSchema = z.object({
 });
 
 export async function GET() {
-  const auth = await requireOwnerApi();
+  const auth = await requireOwnerApi({ feature: "memberships" });
   if (!auth.ok) return auth.response;
 
   const plans = await prisma.membershipPlan.findMany({
@@ -41,7 +41,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireOwnerApi();
+  const auth = await requireOwnerApi({ feature: "memberships" });
   if (!auth.ok) return auth.response;
 
   const body = await request.json().catch(() => null);
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const auth = await requireOwnerApi();
+  const auth = await requireOwnerApi({ feature: "memberships" });
   if (!auth.ok) return auth.response;
 
   const body = await request.json().catch(() => null);

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatPriceBRL } from "@/lib/formatters/br";
+import { PLAN_FEATURE_LABELS, type PlanFeature } from "@/lib/billing/plans";
 
 type PlanCard = {
   id: "starter" | "pro";
@@ -46,6 +47,12 @@ export function BillingBoard() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const blocked = searchParams.get("blocked") === "1";
+  const upgrade = searchParams.get("upgrade") === "1";
+  const featureParam = searchParams.get("feature");
+  const featureLabel =
+    featureParam && featureParam in PLAN_FEATURE_LABELS
+      ? PLAN_FEATURE_LABELS[featureParam as PlanFeature]
+      : null;
   const [state, setState] = useState<BillingState | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -167,6 +174,12 @@ export function BillingBoard() {
       {blocked || !state.access.allowed ? (
         <p className="rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,#ef4444_12%,transparent)] px-4 py-3 text-sm text-[#fca5a5]">
           {state.access.message}
+        </p>
+      ) : null}
+
+      {upgrade && featureLabel && state.access.allowed ? (
+        <p className="rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--copper)_14%,transparent)] px-4 py-3 text-sm text-[var(--copper)]">
+          {featureLabel} faz parte do plano Pro. Faça upgrade para liberar.
         </p>
       ) : null}
 

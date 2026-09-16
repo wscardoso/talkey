@@ -152,14 +152,98 @@ export async function syncTenantAccess(
   return access;
 }
 
+/** Returns true if tenant may accept public bookings; persists expiry when needed. */
+export async function ensurePublicTenantAccess(
+  tenant: TenantBillingFields,
+): Promise<boolean> {
+  const access = evaluateAccess(tenant);
+  if (access.allowed) return true;
+  if (
+    access.reason === "trial_expired" ||
+    access.reason === "subscription_expired"
+  ) {
+    await syncTenantAccess(tenant.id);
+  }
+  return false;
+}
+
+/**
+ * Expire all lapsed trial/subscription tenants in bulk (cron).
+ * Returns how many rows were updated.
+ */
+export async function expireLapsedTenants(limit = 100): Promise<number> {
+  const now = new Date();
+  const candidates = await prisma.tenant.findMany({
+    where: {
+      OR: [
+        {
+          plan: "trial",
+          isActive: true,
+          trialEndsAt: { lt: now },
+        },
+        {
+          plan: { in: ["starter", "pro"] },
+          isActive: true,
+          subscriptionEndsAt: { lt: now },
+        },
+      ],
+    },
+    select: {
+      id: true,
+      plan: true,
+      isActive: true,
+      trialEndsAt: true,
+      subscriptionEndsAt: true,
+    },
+    take: limit,
+  });
+
+  let expired = 0;
+  for (const tenant of candidates) {
+    const access = evaluateAccess(tenant, now);
+    if (
+      !access.allowed &&
+      (access.reason === "trial_expired" ||
+        access.reason === "subscription_expired")
+    ) {
+      await prisma.tenant.update({
+        where: { id: tenant.id },
+        data: { plan: "expired", isActive: false },
+      });
+      expired += 1;
+    }
+  }
+  return expired;
+}
+
+/** Months × 30 days from the later of now or current subscription end. */
+export function computeSubscriptionEnd(
+  months: number,
+  currentEndsAt: Date | null,
+  now = new Date(),
+): Date {
+  const capped = Math.max(1, Math.min(months, 24));
+  const base =
+    currentEndsAt && currentEndsAt.getTime() > now.getTime()
+      ? currentEndsAt
+      : now;
+  return new Date(base.getTime() + capped * 30 * 24 * 60 * 60 * 1000);
+}
+
 export async function activateSubscription(params: {
   tenantId: string;
   plan: "starter" | "pro";
   months: number;
 }): Promise<TenantBillingFields> {
   const months = Math.max(1, Math.min(params.months, 24));
-  const now = new Date();
-  const ends = new Date(now.getTime() + months * 30 * 24 * 60 * 60 * 1000);
+  const current = await prisma.tenant.findUnique({
+    where: { id: params.tenantId },
+    select: { subscriptionEndsAt: true },
+  });
+  const ends = computeSubscriptionEnd(
+    months,
+    current?.subscriptionEndsAt ?? null,
+  );
 
   return prisma.tenant.update({
     where: { id: params.tenantId },
@@ -175,5 +259,12 @@ export async function activateSubscription(params: {
       trialEndsAt: true,
       subscriptionEndsAt: true,
     },
+  });
+}
+
+export async function deactivateTenant(tenantId: string): Promise<void> {
+  await prisma.tenant.update({
+    where: { id: tenantId },
+    data: { plan: "expired", isActive: false },
   });
 }

@@ -31,7 +31,7 @@ async function syncExpired(tenantId: string) {
 }
 
 export async function GET() {
-  const auth = await requireOwnerApi();
+  const auth = await requireOwnerApi({ feature: "memberships" });
   if (!auth.ok) return auth.response;
 
   await syncExpired(auth.session.tenantId);
@@ -82,7 +82,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireOwnerApi();
+  const auth = await requireOwnerApi({ feature: "memberships" });
   if (!auth.ok) return auth.response;
 
   const body = await request.json().catch(() => null);
@@ -151,7 +151,7 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const auth = await requireOwnerApi();
+  const auth = await requireOwnerApi({ feature: "memberships" });
   if (!auth.ok) return auth.response;
 
   const body = await request.json().catch(() => null);

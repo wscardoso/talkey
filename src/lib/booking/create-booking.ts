@@ -8,6 +8,7 @@ import type { CreateBookingInput } from "@/lib/validations/booking";
 import { pickStaffForSlot, resolveSlots } from "@/lib/booking/slots";
 import { formatAddress } from "@/lib/formatters/br";
 import { enqueueBookingCreated } from "@/lib/whatsapp";
+import { ensurePublicTenantAccess } from "@/lib/billing/access";
 
 export class BookingError extends Error {
   constructor(
@@ -45,9 +46,20 @@ export async function createBooking(
   idempotencyKey?: string | null,
 ): Promise<CreateBookingResult> {
   const tenant = await prisma.tenant.findFirst({
-    where: { slug: input.tenantSlug, isActive: true },
+    where: { slug: input.tenantSlug },
   });
   if (!tenant) throw new BookingError("TENANT_NOT_FOUND", 404);
+  if (
+    !(await ensurePublicTenantAccess({
+      id: tenant.id,
+      plan: tenant.plan,
+      isActive: tenant.isActive,
+      trialEndsAt: tenant.trialEndsAt,
+      subscriptionEndsAt: tenant.subscriptionEndsAt,
+    }))
+  ) {
+    throw new BookingError("TENANT_NOT_FOUND", 404);
+  }
 
   if (idempotencyKey) {
     const existing = await prisma.booking.findUnique({

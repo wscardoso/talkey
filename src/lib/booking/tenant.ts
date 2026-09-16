@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { prisma } from "@/lib/prisma";
 import { formatAddress } from "@/lib/formatters/br";
 import { getDemoTenant, isDemoMode } from "@/lib/demo-store";
+import { ensurePublicTenantAccess } from "@/lib/billing/access";
 
 export type PublicTenantPayload = {
   id: string;
@@ -97,7 +98,7 @@ export async function getTenantBySlug(
   }
 
   const tenant = await prisma.tenant.findFirst({
-    where: { slug, isActive: true },
+    where: { slug },
     include: {
       services: {
         where: { isActive: true },
@@ -111,6 +112,17 @@ export async function getTenantBySlug(
   });
 
   if (!tenant) return null;
+  if (
+    !(await ensurePublicTenantAccess({
+      id: tenant.id,
+      plan: tenant.plan,
+      isActive: tenant.isActive,
+      trialEndsAt: tenant.trialEndsAt,
+      subscriptionEndsAt: tenant.subscriptionEndsAt,
+    }))
+  ) {
+    return null;
+  }
 
   const links = await prisma.staffService.findMany({
     where: { tenantId: tenant.id },

@@ -67,7 +67,7 @@ async function resolveSegment(
 }
 
 export async function GET(request: Request) {
-  const auth = await requireOwnerApi();
+  const auth = await requireOwnerApi({ feature: "campaigns" });
   if (!auth.ok) return auth.response;
 
   const url = new URL(request.url);
@@ -99,7 +99,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireOwnerApi();
+  const auth = await requireOwnerApi({ feature: "campaigns" });
   if (!auth.ok) return auth.response;
 
   const body = await request.json().catch(() => null);

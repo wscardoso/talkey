@@ -11,6 +11,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:push": "prisma db push",
+    "ops:tenant": "tsx scripts/ops-tenant.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

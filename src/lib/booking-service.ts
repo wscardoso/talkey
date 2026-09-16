@@ -20,6 +20,7 @@ import {
 } from "@/lib/validations";
 import { enqueueBookingCreated } from "@/lib/whatsapp";
 import type { PublicTenant, SlotDTO } from "@/types/booking";
+import { ensurePublicTenantAccess } from "@/lib/billing/access";
 
 const ACTIVE: Prisma.EnumBookingStatusFilter["in"] = [
   "PENDING_PAYMENT",
@@ -35,13 +36,26 @@ function formatAddress(t: {
   return [t.addressLine1, t.city, t.state].filter(Boolean).join(", ");
 }
 
+async function loadBookableTenantBySlug(slug: string) {
+  const tenant = await prisma.tenant.findFirst({ where: { slug } });
+  if (!tenant) return null;
+  const ok = await ensurePublicTenantAccess({
+    id: tenant.id,
+    plan: tenant.plan,
+    isActive: tenant.isActive,
+    trialEndsAt: tenant.trialEndsAt,
+    subscriptionEndsAt: tenant.subscriptionEndsAt,
+  });
+  return ok ? tenant : null;
+}
+
 export async function getPublicTenant(
   slug: string,
 ): Promise<PublicTenant | null> {
   if (isDemoMode()) return getDemoTenant(slug);
 
   const tenant = await prisma.tenant.findFirst({
-    where: { slug, isActive: true },
+    where: { slug },
     include: {
       services: {
         where: { isActive: true },
@@ -55,6 +69,17 @@ export async function getPublicTenant(
   });
 
   if (!tenant) return null;
+  if (
+    !(await ensurePublicTenantAccess({
+      id: tenant.id,
+      plan: tenant.plan,
+      isActive: tenant.isActive,
+      trialEndsAt: tenant.trialEndsAt,
+      subscriptionEndsAt: tenant.subscriptionEndsAt,
+    }))
+  ) {
+    return null;
+  }
 
   return {
     id: tenant.id,
@@ -120,9 +145,7 @@ export async function getAvailableSlots(params: {
     });
   }
 
-  const tenant = await prisma.tenant.findFirst({
-    where: { slug: params.slug, isActive: true },
-  });
+  const tenant = await loadBookableTenantBySlug(params.slug);
   if (!tenant) throw new Error("TENANT_NOT_FOUND");
 
   const service = await prisma.service.findFirst({
@@ -241,9 +264,7 @@ export async function createBookingAtomic(
 ): Promise<CreateBookingResult> {
   if (isDemoMode()) return createDemoBooking(input);
 
-  const tenant = await prisma.tenant.findFirst({
-    where: { slug: input.tenantSlug, isActive: true },
-  });
+  const tenant = await loadBookableTenantBySlug(input.tenantSlug);
   if (!tenant) {
     return {
       ok: false,

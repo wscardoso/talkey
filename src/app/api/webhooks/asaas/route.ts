@@ -3,19 +3,26 @@ import { markPaymentPaid } from "@/lib/payments/deposit";
 import { enqueueBookingCreated } from "@/lib/whatsapp";
 import { prisma } from "@/lib/prisma";
 import { formatAddress } from "@/lib/formatters/br";
-import {
-  parseSubExternalRef,
-} from "@/lib/billing/asaas-checkout";
-import {
-  activateSubscription,
-  evaluateAccess,
-} from "@/lib/billing/access";
+import { parseSubExternalRef } from "@/lib/billing/asaas-checkout";
+import { recordSubscriptionPayment } from "@/lib/billing/subscription-payment";
 
 export const runtime = "nodejs";
 
+function isProdLike(): boolean {
+  return process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+}
+
 export async function POST(request: Request) {
   const secret = process.env.ASAAS_WEBHOOK_TOKEN;
-  if (secret) {
+  if (!secret) {
+    if (isProdLike()) {
+      console.error("[webhooks:asaas] ASAAS_WEBHOOK_TOKEN missing in production");
+      return NextResponse.json(
+        { error: "misconfigured", message: "Webhook token required" },
+        { status: 503 },
+      );
+    }
+  } else {
     const token = request.headers.get("asaas-access-token");
     if (token !== secret) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -37,6 +44,13 @@ export async function POST(request: Request) {
     typeof payment.externalReference === "string"
       ? payment.externalReference
       : null;
+  const valueRaw = payment.value;
+  const amountCents =
+    typeof valueRaw === "number"
+      ? Math.round(valueRaw * 100)
+      : typeof valueRaw === "string"
+        ? Math.round(Number(valueRaw) * 100)
+        : undefined;
 
   if (
     !event.includes("PAYMENT_CONFIRMED") &&
@@ -49,40 +63,34 @@ export async function POST(request: Request) {
 
   const sub = parseSubExternalRef(externalRef);
   if (sub) {
+    if (!providerRef) {
+      return NextResponse.json({ ok: true, ignored: "missing_payment_id" });
+    }
+
     const tenant = await prisma.tenant.findUnique({
       where: { id: sub.tenantId },
-      select: {
-        id: true,
-        plan: true,
-        isActive: true,
-        trialEndsAt: true,
-        subscriptionEndsAt: true,
-      },
+      select: { id: true },
     });
     if (!tenant) {
       return NextResponse.json({ ok: true, ignored: "tenant_missing" });
     }
 
-    const access = evaluateAccess(tenant);
-    const alreadyOk =
-      access.allowed &&
-      (tenant.plan === sub.plan || tenant.plan === "pro") &&
-      tenant.subscriptionEndsAt &&
-      tenant.subscriptionEndsAt.getTime() > Date.now() + 20 * 24 * 60 * 60 * 1000;
-
-    if (!alreadyOk) {
-      await activateSubscription({
-        tenantId: sub.tenantId,
-        plan: sub.plan,
-        months: sub.months,
-      });
-    }
+    const result = await recordSubscriptionPayment({
+      tenantId: sub.tenantId,
+      providerRef,
+      plan: sub.plan,
+      months: sub.months,
+      amountCents: Number.isFinite(amountCents) ? amountCents : undefined,
+      externalRef,
+      rawPayload: root as object,
+    });
 
     return NextResponse.json({
       ok: true,
       subscription: true,
       tenantId: sub.tenantId,
-      activated: !alreadyOk,
+      activated: result.activated,
+      alreadyRecorded: result.alreadyRecorded,
     });
   }
 

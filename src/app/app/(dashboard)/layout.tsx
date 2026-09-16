@@ -59,7 +59,7 @@ export default async function DashboardLayout({
 
       <div className="mx-auto flex max-w-5xl gap-0 pb-24 md:gap-8 md:px-6 md:pb-8 md:pt-6">
         <aside className="hidden w-52 shrink-0 md:block">
-          <AppNav variant="side" />
+          <AppNav variant="side" plan={String(access.plan)} />
         </aside>
         <main className="min-w-0 flex-1 px-4 py-5 sm:px-6 md:px-0 md:py-0">
           {children}
@@ -67,7 +67,7 @@ export default async function DashboardLayout({
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--lead)_94%,transparent)] backdrop-blur-md md:hidden">
-        <AppNav variant="bottom" />
+        <AppNav variant="bottom" plan={String(access.plan)} />
       </nav>
     </div>
   );

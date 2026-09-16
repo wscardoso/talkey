@@ -19,33 +19,53 @@ import {
   Megaphone,
   BadgeCheck,
   Palette,
+  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  planHasFeature,
+  type PlanFeature,
+} from "@/lib/billing/plans";
 
-const LINKS = [
+const LINKS: Array<{
+  href: string;
+  label: string;
+  icon: typeof CalendarDays;
+  feature?: PlanFeature;
+}> = [
   { href: "/app/agenda", label: "Agenda", icon: CalendarDays },
   { href: "/app/novo", label: "Novo", icon: PlusCircle },
   { href: "/app/link", label: "Link", icon: Link2 },
   { href: "/app/equipe", label: "Equipe", icon: UserRound },
   { href: "/app/servicos", label: "Serviços", icon: Scissors },
   { href: "/app/clientes", label: "Clientes", icon: Users },
-  { href: "/app/mensalistas", label: "Mensalistas", icon: BadgeCheck },
+  {
+    href: "/app/mensalistas",
+    label: "Mensalistas",
+    icon: BadgeCheck,
+    feature: "memberships",
+  },
   { href: "/app/financeiro", label: "Financeiro", icon: Wallet },
   { href: "/app/relatorios", label: "Relatórios", icon: BarChart3 },
-  { href: "/app/campanhas", label: "Campanhas", icon: Megaphone },
-  { href: "/app/temas", label: "Temas", icon: Palette },
+  {
+    href: "/app/campanhas",
+    label: "Campanhas",
+    icon: Megaphone,
+    feature: "campaigns",
+  },
+  { href: "/app/temas", label: "Temas", icon: Palette, feature: "themes" },
   { href: "/app/whatsapp", label: "WhatsApp", icon: MessageCircle },
   { href: "/app/templates", label: "Templates", icon: FileText },
   { href: "/app/notificacoes", label: "Alertas", icon: Bell },
   { href: "/app/assinatura", label: "Plano", icon: CreditCard },
   { href: "/app/configuracoes", label: "Config", icon: Settings },
-] as const;
+];
 
 const PRIMARY = new Set(["/app/agenda", "/app/novo", "/app/link"]);
 
-type Props = { variant: "bottom" | "side" };
+type Props = { variant: "bottom" | "side"; plan?: string };
 
-export function AppNav({ variant }: Props) {
+export function AppNav({ variant, plan = "trial" }: Props) {
   const pathname = usePathname();
   const items =
     variant === "bottom" ? LINKS.filter((l) => PRIMARY.has(l.href)) : LINKS;
@@ -78,21 +98,33 @@ export function AppNav({ variant }: Props) {
 
   return (
     <nav className="sticky top-20 space-y-1 rounded-2xl border border-[var(--border)] bg-[var(--lead)] p-2">
-      {items.map(({ href, label, icon: Icon }) => {
-        const active = pathname === href || pathname.startsWith(`${href}/`);
+      {items.map(({ href, label, icon: Icon, feature }) => {
+        const locked = Boolean(
+          feature && !planHasFeature(plan, feature),
+        );
+        const target = locked
+          ? `/app/assinatura?upgrade=1&feature=${feature}`
+          : href;
+        const active =
+          !locked &&
+          (pathname === href || pathname.startsWith(`${href}/`));
         return (
           <Link
             key={href}
-            href={href}
+            href={target}
             className={cn(
               "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition",
               active
                 ? "bg-[var(--brand-soft)] text-[var(--copper)]"
-                : "text-[var(--steel)] hover:bg-[var(--surface-2)] hover:text-[var(--offwhite)]",
+                : locked
+                  ? "text-[var(--steel)]/70 hover:bg-[var(--surface-2)]"
+                  : "text-[var(--steel)] hover:bg-[var(--surface-2)] hover:text-[var(--offwhite)]",
             )}
+            title={locked ? "Disponível no plano Pro" : undefined}
           >
             <Icon className="h-4 w-4" />
-            {label}
+            <span className="flex-1">{label}</span>
+            {locked ? <Lock className="h-3.5 w-3.5 opacity-70" /> : null}
           </Link>
         );
       })}

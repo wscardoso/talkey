@@ -128,6 +128,7 @@ model Tenant {
   notificationLogs NotificationLog[]
   locations        Location[]
   payments         Payment[]
+  subscriptionPayments SubscriptionPayment[]
   messageTemplates MessageTemplate[]
   notificationPreferences NotificationPreference[]
   membershipPlans MembershipPlan[]
@@ -434,6 +435,27 @@ model Payment {
   @@index([tenantId, bookingId])
   @@index([providerRef])
   @@map("payments")
+}
+
+model SubscriptionPayment {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @map("tenant_id") @db.Uuid
+  provider    String    @default("ASAAS")
+  providerRef String    @unique @map("provider_ref")
+  plan        String
+  months      Int
+  amountCents Int       @default(0) @map("amount_cents")
+  currency    String    @default("BRL") @db.Char(3)
+  status      String    @default("PAID")
+  externalRef String?   @map("external_ref")
+  rawPayload  Json?     @map("raw_payload")
+  paidAt      DateTime? @map("paid_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@map("subscription_payments")
 }
 
 model NotificationLog {

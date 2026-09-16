@@ -26,42 +26,11 @@ Gerado a partir do inventário real do repo. Não reescreve booking/agenda.
 - Edição de `asaasApiKeyEnc` em texto puro sem criptografia dedicada (campo opcional mascarado / só set)
 - Redesign da landing / Dom Carlos
 
-### Superfície
-| Área | Arquivos |
-|------|----------|
-| Páginas | `src/app/app/(dashboard)/equipe/page.tsx`, `servicos/page.tsx`, `configuracoes/page.tsx` |
-| Boards | `src/components/app/staff-board.tsx`, `services-board.tsx`, `settings-form.tsx` |
-| APIs | `src/app/api/app/staff/route.ts`, `staff/[id]/route.ts`, `staff/[id]/rules/route.ts`, `staff/[id]/exceptions/route.ts`, `services/route.ts`, `services/[id]/route.ts`, `settings/route.ts` |
-| Nav | `src/components/app/app-nav.tsx` |
-| Validação | `src/lib/validations/owner.ts` |
-
-### Schema / migrations
-Nenhuma — modelos já existem.
-
-### Fluxo
-
-```mermaid
-flowchart TD
-  owner[Owner_login]
-  servicos[CRUD_Servicos]
-  equipe[CRUD_Staff_plus_StaffService]
-  horas[Rules_and_Exceptions]
-  config[PATCH_Tenant_settings]
-  publico["/agendar/slug"]
-  owner --> servicos --> equipe --> horas --> config --> publico
-```
-
-### Riscos
-- Soft-delete vs hard-delete: preferir `INACTIVE` / `isActive: false` se houver bookings.
-- Staff sem rules → zero slots públicos (empty state + aviso).
-- Cross-tenant: sempre `where: { id, tenantId }`.
-- `StaffService.tenantId` denormalizado obrigatório no insert.
-
 ### Critério de aceite
 OWNER logado altera serviços/equipe/horários/config e o `/agendar/{slug}` reflete sem seed/SQL.
 
-### Estimativa
-**L** — depende de: auth + schema existentes (ok).
+### Status
+**Entregue.**
 
 ---
 
@@ -77,30 +46,20 @@ OWNER logado altera serviços/equipe/horários/config e o `/agendar/{slug}` refl
 5. (B.1) Super-admin lista/cria tenants se self-serve for adiado.
 
 ### Escopo IN
-- `/comecar` ou CTA na home → form onboarding
-- `POST /api/auth/signup` (ou `/api/onboarding`)
-- Seed mínimo: 1 serviço placeholder opcional OU empty state guiado (Fase A cobre o resto)
+- `/comecar` → form onboarding
+- `POST /api/auth/signup`
 - `isActive: true`, `plan: trial`, `trialEndsAt = now() + 30 dias`
-- Mensagem de boas-vindas (WhatsApp via uazapi ou e-mail) com link `/agendar/{slug}` + `/app/login`
-- `/app/whatsapp`: criar/conectar instância uazapi, exibir QR Code, status e número; salvar `waInstanceId` no Tenant
-- Templates de mensagem básicos + toggles de notificação (B3)
+- `/app/whatsapp`: criar/conectar instância uazapi, QR Code, status
+- Templates + toggles de notificação
 
 ### Escopo OUT
 - Pagamento de assinatura, custom domain
 
-### Escolha
-**Self-serve primeiro** (B) com WhatsApp self-serve **incluído** — sem isso o onboarding não entrega lembretes/confirmação autônomos. Super-admin (B.1) só se abuso/spam exigir gate.
-
-### Schema / migrations
-- `Tenant.trialEndsAt` + `Tenant.trialStartedAt`
-- `MessageTemplate` (por tenant, keys: booking_created, reminder_24h, reminder_2h, cancel, feedback)
-- `NotificationPreference` (por tenant, toggles por evento)
-
 ### Critério de aceite
 Barbearia nova completa signup, conecta WhatsApp via QR, recebe boas-vindas com links, configura via Fase A e publica `/agendar/{slug}`.
 
-### Estimativa
-**L** — depende de Fase A + admin/instance uazapi.
+### Status
+**Entregue** (self-serve + WhatsApp QR). Super-admin B.1 permanece opcional.
 
 ---
 
@@ -110,18 +69,37 @@ Barbearia nova completa signup, conecta WhatsApp via QR, recebe boas-vindas com 
 
 ### User stories
 1. Plano/gating por `Tenant.plan` + `isActive`.
-2. Checkout ou registro manual de assinatura (Asaas/Stripe).
-3. Invites OWNER/MANAGER opcional.
-4. Logs/alertas básicos de falha WA/PIX.
+2. Checkout ou registro manual de assinatura (Asaas PIX).
+3. Invites OWNER/MANAGER opcional — **adiado** (role existe; sem fluxo de convite nesta fase).
+4. Logs/alertas básicos de falha WA/PIX — falhas recentes em `/app/financeiro`.
+
+### Limites enforced
+| Plano | Incluso | Bloqueado |
+|-------|---------|-----------|
+| Trial | Tudo (30 dias) | — |
+| Starter | Agenda, equipe, WhatsApp, relatórios, config | Campanhas, mensalistas, temas |
+| Pro | Tudo do Starter + campanhas, mensalistas, temas | — |
+| Expired | Só `/app/assinatura` | Demais APIs/páginas + booking público |
 
 ### Escopo OUT
-- App mobile nativo, AI WhatsApp agent, multi-Location UI.
+- Stripe checkout SaaS, app mobile, AI WhatsApp agent, multi-Location UI, invites.
 
 ### Critério de aceite
-Tenant inadimplente pode ser desativado; limites starter documentados e enforced.
+- Tenant inadimplente desativado (`plan=expired`, `isActive=false`) via sync on-access **e** cron.
+- Booking público respeita `evaluateAccess` (não só `isActive`).
+- Limites starter documentados **e** enforced (API + nav + páginas).
+- Checkout PIX Asaas + webhook `talkey-sub:` idempotente (`subscription_payments`).
+- Ops: `npm run ops:tenant -- status|activate|renew|deactivate <slug>`.
 
-### Estimativa
-**L** — depende de A + B.
+### Status (2026-09-15)
+**Concluída** (PR-C1). Invites e Stripe ficam no backlog.
+
+### Evidências
+- `src/lib/billing/*`, `src/lib/auth/require-owner.ts`
+- `src/app/api/app/billing`, `webhooks/asaas`, `cron/notifications`
+- `scripts/ops-tenant.ts`
+- Testes: `tests/billing.access.test.ts`
+- Deploy: `DEPLOY.md` § billing/cron/webhook
 
 ---
 
@@ -130,26 +108,26 @@ Tenant inadimplente pode ser desativado; limites starter documentados e enforced
 **Objetivo:** aumentar retenção e receita do tenant depois de operar o básico.
 
 ### Escopo
-- `/app/campanhas` — segmentos (nunca atenderam, inativos, aniversariantes), preview, disparo WhatsApp em massa
-- `/app/relatorios` avançado — período, agendamentos, faturamento, ticket médio, status, novos vs recorrentes
-- `/app/mensalistas` — pacotes/assinaturas de clientes (serviços incluídos, limite, validade, status)
-- `/app/temas` — presets visuais + logo + cor na página pública
-- Biblioteca de mídias — `Service.imageUrl` + storage (Supabase Storage/S3)
+- `/app/campanhas` — segmentos, preview, disparo WhatsApp ✅ (gated Pro)
+- `/app/relatorios` avançado — incremento de analytics ainda no backlog
+- `/app/mensalistas` — pacotes/assinaturas de clientes ✅ (gated Pro)
+- `/app/temas` — presets + logo + cor na página pública ✅ (gated Pro)
+- Biblioteca de mídias — upload básico ✅; galeria avançada futura
 
 ### Estimativa
-**M–L** por item — só depois de A/B/C estáveis.
+**M–L** por item restante — analytics avançado e galeria.
 
 ---
 
 ## Checklist de PRs
 
-1. **PR-A1** — validations + APIs services/staff/settings
-2. **PR-A2** — UI serviços + equipe (com rules/exceptions) + nav
-3. **PR-A3** — UI configurações + empty states / aceite manual
-4. **PR-B1** — signup + `/comecar` + trial 30d + mensagem de boas-vindas
-5. **PR-B2** — `/app/whatsapp` com QR Code / pairing e status (uazapi)
-6. **PR-B3** — templates de mensagem + toggles de notificações
-7. **PR-C1** — billing/gating + expiração de trial
+1. **PR-A1** — validations + APIs services/staff/settings ✅
+2. **PR-A2** — UI serviços + equipe (com rules/exceptions) + nav ✅
+3. **PR-A3** — UI configurações + empty states / aceite manual ✅
+4. **PR-B1** — signup + `/comecar` + trial 30d + mensagem de boas-vindas ✅
+5. **PR-B2** — `/app/whatsapp` com QR Code / pairing e status (uazapi) ✅
+6. **PR-B3** — templates de mensagem + toggles de notificações ✅
+7. **PR-C1** — billing/gating + expiração de trial + limites starter/pro ✅
 8. **PR-D1** — campanhas ou resumos avançados ✅
 9. **PR-D2** — mensalistas ✅
 10. **PR-D3** — temas + biblioteca de mídias ✅ (URL + upload Storage)
@@ -157,51 +135,33 @@ Tenant inadimplente pode ser desativado; limites starter documentados e enforced
 12. **PR-E2** — troca de senha do OWNER logado ✅
 13. **PR-E3** — checkout assinatura Asaas PIX + webhook ✅
 
-## Continua manual na Fase A
-- Criar instância WhatsApp (uazapi) e colar `waInstanceId`
-- Chave Asaas do tenant (se depósito)
-- Criar o Tenant + OWNER inicial (até Fase B)
+## Operação contínua (não é SQL de bootstrap)
+
 - Coolify: `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` + bucket público `tenant-media`
-- Webhook Asaas apontando para `/api/webhooks/asaas` (depósito + `talkey-sub:`; legado `trato-sub:` ainda aceito)
+- Webhook Asaas apontando para `/api/webhooks/asaas` (**`ASAAS_WEBHOOK_TOKEN` obrigatório em produção**)
+- Cron periódico: `POST /api/cron/notifications` com `CRON_SECRET` (expira depósitos, WA queue **e** tenants vencidos)
+- Ativar/cortar tenant: `npm run ops:tenant -- …` ou `BILLING_ACTIVATE_SECRET` em `/app/assinatura`
+- Prefixo legado `trato-sub:` ainda aceito no webhook; novos checkouts usam `talkey-sub:`
 
 ---
 
 ## Backlog — evoluções candidatas (fase a definir)
 
-Itens capturados fora do escopo A→B→C atual. **Não estão alocados a nenhuma fase.** Antes de implementar, fazer um estudo curto de encaixe (dependências, valor vs risco, se vira A.x / B.x / C.x ou fase D).
+Itens fora do escopo A→C fechado.
 
-### Perfil e identidade do tenant (área do dono)
-- Aba/seção de perfil: foto/logo (upload usável, não só URL), endereço, aparência (marca), e troca de senha do OWNER
-- Separar mentalmente “conta” (e-mail/senha) de “salão” (logo, endereço, brand) se a UX pedir
-- Hoje `/app/configuracoes` já cobre parte disso (nome, endereço, cor, `logoUrl`); troca de senha ✅; falta polish de mídia avançada
-- **Tema no painel do dono:** hoje `brandPrimary` / presets em `/app/temas` afetam só a página pública (`/agendar/{slug}`). Futuro: opcionalmente aplicar a cor do tenant no shell do `/app` (nav ativa, CTAs, acentos), sem trocar a marca TALKEY do produto — decidir UX (só acentos vs. shell inteiro)
+### Conta / equipe
+- Invites OWNER/MANAGER (token 7d) — adiado da Fase C
+- Tema da marca no shell do `/app` (hoje só página pública)
+- Super-admin cross-tenant
 
 ### Relatórios avançados
-- Gráficos de pico de horários
-- Clientes com mais agendamentos (top clientes)
-- Outros gráficos pertinentes (ex.: serviço mais vendido, no-show por dia) — lista final no estudo
-- Parte de `/app/relatorios` já existe (volume, faturamento, ocupação, faltas); isto é incremento de analytics
+- Gráficos de pico de horários, top clientes, serviço mais vendido, no-show
+
+### Engajamento
+- Programa de fidelidade / gift cards
+- Galeria de mídias avançada
 
 ### Critério para alocar fase
-1. Dependências técnicas (storage de imagem, auth password change, agregações SQL)
-2. Valor para o tenant atual vs. crescimento SaaS (B/C)
-3. Não atrasar provisionamento (B) nem billing/gating (C) sem decisão explícita
-
-### Backlog — engajamento (fora de D até demanda real)
-- Programa de fidelidade (pontos por agendamento, resgate)
-- Vale-presente / gift cards
-- Biblioteca de mídias (storage + `Service.imageUrl`; galeria pública vs upload por serviço) — upload básico ✅; galeria avançada ainda futura
-
----
-
-## Prompt curto — implementar só Fase A (Agent)
-
-```text
-Implemente SOMENTE a Fase A do ROADMAP_SAAS.md no repo Talkey.
-
-IN: CRUD owner de /app/servicos, /app/equipe (staff + StaffService + AvailabilityRule + AvailabilityException), /app/configuracoes (campos seguros do Tenant). APIs /api/app/* com requireOwnerApi e filtro tenantId. Zod em src/lib/validations/owner.ts. Atualizar app-nav. Soft-deactivate em vez de hard-delete se houver bookings. UI no padrão customers-board (Tailwind + CSS vars, PT-BR, mobile-first). Sem migration nova.
-
-OUT: signup, billing, invites, Location, redesign landing, reescrever agenda/booking.
-
-Aceite: OWNER configura tudo pela UI e /agendar/{slug} reflete. Não edite ROADMAP_SAAS.md.
-```
+1. Dependências técnicas
+2. Valor para o tenant atual vs. crescimento SaaS
+3. Não atrasar billing/gating sem decisão explícita
