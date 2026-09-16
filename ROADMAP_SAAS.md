@@ -150,7 +150,7 @@ Barbearia nova completa signup, conecta WhatsApp via QR, recebe boas-vindas com 
 Itens fora do escopo A→C fechado.
 
 ### Conta / equipe
-- Invites OWNER/MANAGER (token 7d) — adiado da Fase C
+- Invites OWNER/MANAGER (token 7d) — **entregue** (`001-owner-manager-invites`, 2026-09-16)
 - Tema da marca no shell do `/app` (hoje só página pública)
 - Super-admin cross-tenant
 

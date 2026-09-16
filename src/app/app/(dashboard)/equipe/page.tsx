@@ -1,4 +1,5 @@
 import { StaffBoard } from "@/components/app/staff-board";
+import { InvitesBoard } from "@/components/app/invites-board";
 
 export default function EquipePage() {
   return (
@@ -8,9 +9,10 @@ export default function EquipePage() {
           Equipe
         </h1>
         <p className="mt-1 text-sm text-[var(--steel)]">
-          Barbeiros, serviços que cada um faz e horários de atendimento.
+          Quem atende, serviços que cada um faz e horários de atendimento.
         </p>
       </header>
+      <InvitesBoard />
       <StaffBoard />
     </div>
   );
