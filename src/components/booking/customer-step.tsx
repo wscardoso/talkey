@@ -131,14 +131,14 @@ export function CustomerStep({ onContinue }: Props) {
         <button
           type="button"
           onClick={() => setStep("datetime")}
-          className="min-h-11 flex-1 rounded-xl border border-[var(--border)] px-4 text-sm font-medium text-[var(--muted)]"
+          className="min-h-11 flex-1 rounded-[var(--radius-card)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--muted)]"
         >
           Voltar
         </button>
         <button
           type="button"
           onClick={handleContinue}
-          className="min-h-11 flex-[2] rounded-xl bg-[var(--brand)] px-4 text-sm font-semibold text-[var(--brand-fg)] transition hover:brightness-110"
+          className="min-h-11 flex-[2] rounded-[var(--radius-card)] bg-[var(--brand)] px-4 text-sm font-semibold text-[var(--brand-fg)] transition hover:brightness-110"
         >
           Revisar
         </button>
@@ -171,7 +171,7 @@ function Field({
 
 function inputClass(hasError: boolean): string {
   return cn(
-    "w-full min-h-11 rounded-xl border bg-[var(--surface)] px-3 text-[var(--fg)] outline-none transition",
+    "w-full min-h-11 rounded-[var(--radius-card)] border bg-[var(--surface)] px-3 text-[var(--fg)] outline-none transition",
     "placeholder:text-[var(--muted)]/60 focus:ring-2 focus:ring-[var(--brand)]/40",
     hasError ? "border-red-500" : "border-[var(--border)]",
   );

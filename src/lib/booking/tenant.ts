@@ -12,6 +12,7 @@ export type PublicTenantPayload = {
   locale: string;
   currency: string;
   brandPrimary: string | null;
+  themePreset: string | null;
   logoUrl: string | null;
   phone: string | null;
   address: string;
@@ -64,6 +65,7 @@ export async function getTenantBySlug(
       locale: "pt-BR",
       currency: "BRL",
       brandPrimary: demo.brandPrimary,
+      themePreset: demo.themePreset,
       logoUrl: demo.logoUrl,
       phone: null,
       address: formatAddress(demo),
@@ -149,6 +151,7 @@ export async function getTenantBySlug(
     locale: tenant.locale,
     currency: tenant.currency,
     brandPrimary: tenant.brandPrimary,
+    themePreset: tenant.themePreset,
     logoUrl: tenant.logoUrl,
     phone: tenant.phone,
     address: formatAddress(tenant),

@@ -38,7 +38,7 @@ export function StaffStep({ staff, service, onContinue }: Props) {
             selectStaff(null);
           }}
           className={cn(
-            "flex min-h-[64px] w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all duration-200 active:scale-[0.99]",
+            "flex min-h-[64px] w-full items-center gap-3 rounded-[var(--radius-card)] border px-4 py-3 text-left transition-all duration-200 active:scale-[0.99]",
             staffMode === "any"
               ? "border-[var(--brand)] bg-[var(--brand-soft)] shadow-[0_0_0_1px_var(--brand)]"
               : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--brand)]/50",
@@ -69,7 +69,7 @@ export function StaffStep({ staff, service, onContinue }: Props) {
                 selectStaff(s);
               }}
               className={cn(
-                "flex min-h-[64px] w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all duration-200 active:scale-[0.99]",
+                "flex min-h-[64px] w-full items-center gap-3 rounded-[var(--radius-card)] border px-4 py-3 text-left transition-all duration-200 active:scale-[0.99]",
                 isSelected
                   ? "border-[var(--brand)] bg-[var(--brand-soft)] shadow-[0_0_0_1px_var(--brand)]"
                   : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--brand)]/50",
@@ -99,7 +99,7 @@ export function StaffStep({ staff, service, onContinue }: Props) {
         <button
           type="button"
           onClick={() => setStep("service")}
-          className="min-h-11 flex-1 rounded-xl border border-[var(--border)] px-4 text-sm font-medium text-[var(--muted)]"
+          className="min-h-11 flex-1 rounded-[var(--radius-card)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--muted)]"
         >
           Voltar
         </button>
@@ -107,7 +107,7 @@ export function StaffStep({ staff, service, onContinue }: Props) {
           type="button"
           onClick={onContinue}
           disabled={staffMode === "specific" && !selected}
-          className="min-h-11 flex-[2] rounded-xl bg-[var(--brand)] px-4 text-sm font-semibold text-[var(--brand-fg)] transition enabled:hover:brightness-110 disabled:opacity-40"
+          className="min-h-11 flex-[2] rounded-[var(--radius-card)] bg-[var(--brand)] px-4 text-sm font-semibold text-[var(--brand-fg)] transition enabled:hover:brightness-110 disabled:opacity-40"
         >
           Continuar
         </button>

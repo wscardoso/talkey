@@ -17,6 +17,7 @@ const SETTINGS_SELECT = {
   state: true,
   brandPrimary: true,
   logoUrl: true,
+  themePreset: true,
   timezone: true,
   slotIntervalMin: true,
   bufferBeforeMin: true,
@@ -71,7 +72,9 @@ export async function PATCH(request: Request) {
 
   const data = parsed.data;
   const themeTouched =
-    data.brandPrimary !== undefined || data.logoUrl !== undefined;
+    data.brandPrimary !== undefined ||
+    data.logoUrl !== undefined ||
+    data.themePreset !== undefined;
   if (themeTouched) {
     const themeAuth = await requireOwnerApi({ feature: "themes" });
     if (!themeAuth.ok) return themeAuth.response;
@@ -99,6 +102,9 @@ export async function PATCH(request: Request) {
         : {}),
       ...(data.logoUrl !== undefined
         ? { logoUrl: blankToNull(data.logoUrl) }
+        : {}),
+      ...(data.themePreset !== undefined
+        ? { themePreset: blankToNull(data.themePreset) }
         : {}),
       ...(data.slotIntervalMin !== undefined
         ? { slotIntervalMin: data.slotIntervalMin }

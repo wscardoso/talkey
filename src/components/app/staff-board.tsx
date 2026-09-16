@@ -308,7 +308,7 @@ export function StaffBoard() {
         <p className="text-sm text-[var(--steel)]">Carregando…</p>
       ) : rows.length === 0 ? (
         <p className="rounded-xl border border-dashed border-[var(--border)] p-6 text-sm text-[var(--steel)]">
-          Nenhuma pessoa na equipe. Cadastre barbeiros e defina os horários —
+          Nenhuma pessoa na equipe. Cadastre quem atende e defina os horários —
           sem isso o público não vê slots.
         </p>
       ) : (
@@ -506,8 +506,8 @@ export function StaffBoard() {
             {tab === "horarios" ? (
               <div className="space-y-3">
                 <p className="text-sm text-[var(--steel)]">
-                  Marque os dias e ajuste o expediente. Sem horários, o barbeiro
-                  não gera slots.
+                  Marque os dias e ajuste o expediente. Sem horários, essa
+                  pessoa não gera slots.
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {DAYS.map((d) => {

@@ -129,7 +129,7 @@ export function FinanceBoard() {
                 </p>
                 <a
                   className="mt-2 inline-block text-xs text-[var(--signal)]"
-                  href={`https://wa.me/${p.customerPhone.replace(/\D/g, "")}?text=${encodeURIComponent("Oi! Segue o lembrete do sinal PIX do seu horário na barbearia.")}`}
+                  href={`https://wa.me/${p.customerPhone.replace(/\D/g, "")}?text=${encodeURIComponent("Oi! Segue o lembrete do sinal PIX do seu horário.")}`}
                   target="_blank"
                   rel="noreferrer"
                 >

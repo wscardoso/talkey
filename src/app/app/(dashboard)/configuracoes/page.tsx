@@ -8,7 +8,7 @@ export default function ConfiguracoesPage() {
           Configurações
         </h1>
         <p className="mt-1 text-sm text-[var(--steel)]">
-          Dados da barbearia, marca, políticas de agenda e depósito.
+          Dados do estabelecimento, marca, políticas de agenda e depósito.
         </p>
       </header>
       <SettingsForm />

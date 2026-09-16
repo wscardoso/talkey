@@ -170,7 +170,7 @@ export function SlotPicker({
                 type="button"
                 onClick={() => selectDate(d.iso)}
                 className={cn(
-                  "flex h-[72px] w-14 shrink-0 flex-col items-center justify-center rounded-xl border transition-colors duration-200",
+                  "flex h-[72px] w-14 shrink-0 flex-col items-center justify-center rounded-[var(--radius-card)] border transition-colors duration-200",
                   active
                     ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--brand-fg)]"
                     : "border-[var(--border)] bg-[var(--surface)] text-[var(--fg)]",
@@ -230,7 +230,7 @@ export function SlotPicker({
                   aria-selected={selected}
                   onClick={() => onPickSlot(s)}
                   className={cn(
-                    "h-11 rounded-lg border text-sm font-semibold tabular-nums transition-all duration-150 active:scale-[0.97]",
+                    "h-11 rounded-[var(--radius-card)] border text-sm font-semibold tabular-nums transition-all duration-150 active:scale-[0.97]",
                     selected
                       ? "border-[var(--brand)] bg-[var(--brand)] text-[var(--brand-fg)]"
                       : "border-[var(--border)] bg-[var(--surface)] text-[var(--fg)] hover:border-[var(--brand)]/60",
@@ -252,7 +252,7 @@ export function SlotPicker({
         <button
           type="button"
           onClick={() => setStep("staff")}
-          className="min-h-11 flex-1 rounded-xl border border-[var(--border)] px-4 text-sm font-medium text-[var(--muted)]"
+          className="min-h-11 flex-1 rounded-[var(--radius-card)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--muted)]"
         >
           Voltar
         </button>
@@ -260,7 +260,7 @@ export function SlotPicker({
           type="button"
           onClick={onContinue}
           disabled={!slot}
-          className="min-h-11 flex-[2] rounded-xl bg-[var(--brand)] px-4 text-sm font-semibold text-[var(--brand-fg)] transition enabled:hover:brightness-110 disabled:opacity-40"
+          className="min-h-11 flex-[2] rounded-[var(--radius-card)] bg-[var(--brand)] px-4 text-sm font-semibold text-[var(--brand-fg)] transition enabled:hover:brightness-110 disabled:opacity-40"
         >
           Continuar
         </button>

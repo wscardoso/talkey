@@ -4,7 +4,7 @@ export default function AgendarNotFound() {
   return (
     <div className="booking-shell flex min-h-dvh flex-col items-center justify-center px-6 text-center">
       <h1 className="font-[family-name:var(--font-display)] text-4xl tracking-wide text-[var(--fg)]">
-        Barbearia não encontrada
+        Página não encontrada
       </h1>
       <p className="mt-3 max-w-sm text-[var(--muted)]">
         O link pode estar incorreto ou o estabelecimento está inativo.

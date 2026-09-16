@@ -19,7 +19,7 @@ export async function GET(request: Request) {
   });
   if (!tenant) {
     return NextResponse.json(
-      { error: "TENANT_NOT_FOUND", message: "Barbearia não encontrada" },
+      { error: "TENANT_NOT_FOUND", message: "Estabelecimento não encontrado" },
       { status: 404 },
     );
   }

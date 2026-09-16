@@ -141,7 +141,7 @@ export function TemplatesBoard() {
             .replaceAll("{cliente}", "João Silva")
             .replaceAll("{servico}", "Corte + Barba")
             .replaceAll("{profissional}", "Carlos")
-            .replaceAll("{barbearia}", "Seu salão")
+            .replaceAll("{barbearia}", "Seu negócio")
             .replaceAll("{endereco}", "Av. Exemplo, 100")
             .replaceAll("{quando}", "15/09/2026 às 14:00")}
         </pre>

@@ -1,7 +1,9 @@
 # 03 — Brand: Talkey
 
 **Product name:** Talkey  
-**Positioning:** Agendamento online para barbearias e salões, com WhatsApp e compromisso de horário.
+**Positioning:** Agendamento online com WhatsApp e compromisso de horário para negócios de atendimento presencial.
+
+**Segmentos atendidos:** barbearia, salão, clínica estética, petshop.
 
 ## Tagline
 > Agendamento com compromisso. A casa cumpre o horário.
@@ -18,10 +20,12 @@
 
 ## Visual
 - Wordmark: `TALKEY` em display (tracking amplo)
-- Mark provisório: lettermark T — `src/components/brand/talkey-mark.tsx` (marca final via Open Design)
-- Paleta: cobre `#E06535`, graphite, steel (mantida do design Urbano & Funcional)
+- Mark: balão de fala com chave — `src/components/brand/talkey-mark.tsx`. O balão é a confirmação que sai no WhatsApp; a chave é o horário cumprido. Traço em `currentColor`, viewBox 40, sem lettermark.
+- Paleta do produto: cobre `#E06535`, graphite, steel (mantida do design Urbano & Funcional)
+- Paleta do tenant: definida pelos packs de tema (`src/lib/themes/presets.ts`), aplicados na página pública
 
 ## Copy operacional
+- Vocabulário neutro de vertical: **equipe** (não “barbeiros”), **negócio**/**casa**, **quem atende**
 - CTA: *Agendar* / *Confirmar horário*
 - Sucesso: *Confirmado*
 - Footer booking: *Agendado com Talkey* / wordmark TALKEY

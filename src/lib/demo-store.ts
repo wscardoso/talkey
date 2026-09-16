@@ -117,6 +117,7 @@ export function getDemoTenant(slug: string): PublicTenant | null {
     timezone: "America/Sao_Paulo",
     logoUrl: null,
     brandPrimary: "#E06535",
+    themePreset: "navalha",
     addressLine1: "AV BRASIL, 142, Parque das Nações",
     city: "Iapu",
     state: "MG",

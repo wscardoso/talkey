@@ -83,7 +83,7 @@ export function PixCheckout({ slug, bookingId }: Props) {
   }
 
   if (!data) {
-    return <p className="text-sm text-[var(--steel)]">Gerando PIX…</p>;
+    return <p className="text-sm text-[var(--muted)]">Gerando PIX…</p>;
   }
 
   const remaining = Math.max(0, data.priceCents - data.amountCents);
@@ -94,9 +94,9 @@ export function PixCheckout({ slug, bookingId }: Props) {
         <h1 className="font-[family-name:var(--font-display)] text-3xl tracking-[0.08em]">
           Pagar sinal PIX
         </h1>
-        <p className="mt-1 text-sm text-[var(--steel)]">
+        <p className="mt-1 text-sm text-[var(--muted)]">
           {data.serviceName} · sinal{" "}
-          <strong className="text-[var(--offwhite)]">
+          <strong className="text-[var(--fg)]">
             {formatPriceBRL(data.amountCents)}
           </strong>
           {remaining > 0 ? (
@@ -109,7 +109,7 @@ export function PixCheckout({ slug, bookingId }: Props) {
       </header>
 
       {data.pixQrCode ? (
-        <div className="space-y-3 rounded-xl border border-[var(--border)] bg-[var(--lead)] p-4">
+        <div className="space-y-3 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(data.pixQrCode)}`}
@@ -121,17 +121,17 @@ export function PixCheckout({ slug, bookingId }: Props) {
           <button
             type="button"
             onClick={() => void copy()}
-            className="w-full rounded-lg bg-[var(--copper)] px-4 py-3 text-sm font-semibold text-[var(--offwhite)]"
+            className="w-full rounded-[var(--radius-card)] bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-[var(--brand-fg)]"
           >
             {copied ? "Copiado!" : "Copiar código PIX"}
           </button>
-          <p className="break-all rounded-lg bg-[var(--graphite)] p-3 font-mono text-[10px] text-[var(--steel)]">
+          <p className="break-all rounded-[var(--radius-card)] bg-[var(--surface-2)] p-3 font-mono text-[10px] text-[var(--muted)]">
             {data.pixQrCode}
           </p>
         </div>
       ) : null}
 
-      <p className="text-xs text-[var(--steel)]">
+      <p className="text-xs text-[var(--muted)]">
         Após o pagamento, a confirmação é automática. Expira em{" "}
         {new Date(data.expiresAt).toLocaleTimeString("pt-BR", {
           hour: "2-digit",
@@ -145,7 +145,7 @@ export function PixCheckout({ slug, bookingId }: Props) {
           type="button"
           disabled={busy}
           onClick={() => void simulatePay()}
-          className="w-full rounded-lg border border-[var(--signal)] px-4 py-3 text-sm text-[var(--signal)]"
+          className="w-full rounded-[var(--radius-card)] border border-[var(--success)] px-4 py-3 text-sm text-[var(--success)]"
         >
           {busy ? "Confirmando…" : "Simular pagamento (sandbox)"}
         </button>

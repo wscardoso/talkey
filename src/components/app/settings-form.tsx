@@ -158,7 +158,7 @@ export function SettingsForm() {
     <div className="space-y-6">
       <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--lead)] p-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--steel)]">
-          Barbearia
+          Estabelecimento
         </h2>
         <p className="text-xs text-[var(--steel)]">
           Link público: /agendar/{settings.slug} · plano {settings.plan}

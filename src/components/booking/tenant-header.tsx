@@ -7,17 +7,13 @@ type Props = {
 };
 
 export function TenantHeader({ tenant }: Props) {
-  const brand = tenant.brandPrimary ?? "#E06535";
-
   return (
-    <header
-      className="relative overflow-hidden border-b border-[var(--border)]"
-      style={{ ["--brand" as string]: brand }}
-    >
+    <header className="relative overflow-hidden border-b border-[var(--border)]">
       <div
         className="pointer-events-none absolute inset-0 opacity-40"
         style={{
-          background: `radial-gradient(ellipse 80% 60% at 20% 0%, color-mix(in srgb, ${brand} 35%, transparent), transparent 70%)`,
+          background:
+            "radial-gradient(ellipse 80% 60% at 20% 0%, color-mix(in srgb, var(--brand) 35%, transparent), transparent 70%)",
         }}
       />
       <div className="relative mx-auto flex max-w-lg items-center gap-4 px-4 py-5 sm:px-6">

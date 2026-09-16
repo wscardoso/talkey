@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { sanitizePlainText } from "@/lib/validations";
+import { THEME_PRESET_IDS } from "@/lib/themes/presets";
 
 const timeHm = z
   .string()
@@ -182,6 +183,9 @@ export const updateSettingsSchema = z.object({
     .optional(),
   logoUrl: z
     .union([z.literal(""), z.null(), z.string().trim().url()])
+    .optional(),
+  themePreset: z
+    .union([z.literal(""), z.null(), z.enum(THEME_PRESET_IDS)])
     .optional(),
   slotIntervalMin: z.coerce.number().int().min(5).max(60).optional(),
   bufferBeforeMin: z.coerce.number().int().min(0).max(120).optional(),

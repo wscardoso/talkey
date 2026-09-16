@@ -41,6 +41,7 @@ body {
 }
 
 .booking-shell {
+  --radius-card: 0.75rem;
   background:
     radial-gradient(
       ellipse 90% 50% at 50% -10%,

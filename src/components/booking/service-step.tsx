@@ -37,7 +37,7 @@ export function ServiceStep({ services }: Props) {
                 aria-selected={selected}
                 onClick={() => selectService(s)}
                 className={cn(
-                  "group flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200",
+                  "group flex w-full items-center gap-3 rounded-[var(--radius-card)] border px-3 py-3 text-left transition-all duration-200",
                   "min-h-[72px] active:scale-[0.99]",
                   selected
                     ? "border-[var(--brand)] bg-[var(--brand-soft)] shadow-[0_0_0_1px_var(--brand)]"

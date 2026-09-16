@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s · Talkey",
   },
   description:
-    "Talkey: agendamento online para barbearias e salões, com WhatsApp e horário cumprido.",
+    "Talkey: agendamento online para barbearias, salões, clínicas estéticas e petshops, com WhatsApp e horário cumprido.",
   applicationName: "Talkey",
 };
 

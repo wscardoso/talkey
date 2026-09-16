@@ -11,7 +11,7 @@ export default async function TemasPage() {
           Temas
         </h1>
         <p className="mt-1 text-sm text-[var(--steel)]">
-          Cor, logo e aparência da página de agendamento.
+          Escolha o pack que combina com a casa, ajuste a cor e o logo.
         </p>
       </header>
       <ThemesBoard />

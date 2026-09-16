@@ -96,6 +96,7 @@ model Tenant {
   country           String          @default("BR") @db.Char(2)
   logoUrl           String?         @map("logo_url")
   brandPrimary      String?         @map("brand_primary")
+  themePreset       String?         @map("theme_preset")
   customDomain      String?         @unique @map("custom_domain")
   slotIntervalMin   Int             @default(15) @map("slot_interval_min")
   bufferBeforeMin   Int             @default(0) @map("buffer_before_min")

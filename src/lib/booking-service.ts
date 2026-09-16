@@ -88,6 +88,7 @@ export async function getPublicTenant(
     timezone: tenant.timezone,
     logoUrl: tenant.logoUrl,
     brandPrimary: tenant.brandPrimary ?? "#E06535",
+    themePreset: tenant.themePreset,
     addressLine1: tenant.addressLine1,
     city: tenant.city,
     state: tenant.state,
@@ -269,7 +270,7 @@ export async function createBookingAtomic(
     return {
       ok: false,
       code: "TENANT_NOT_FOUND",
-      message: "Barbearia não encontrada",
+      message: "Estabelecimento não encontrado",
       status: 404,
     };
   }

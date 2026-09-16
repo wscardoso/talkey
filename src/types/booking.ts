@@ -22,6 +22,7 @@ export type PublicTenant = {
   timezone: string;
   logoUrl: string | null;
   brandPrimary: string;
+  themePreset: string | null;
   addressLine1: string | null;
   city: string | null;
   state: string | null;

@@ -10,6 +10,7 @@ import { StaffStep } from "@/components/booking/staff-step";
 import { SlotPicker } from "@/components/booking/slot-picker";
 import { CustomerStep } from "@/components/booking/customer-step";
 import { ConfirmStep } from "@/components/booking/confirm-step";
+import { getThemePreset, themePresetVars } from "@/lib/themes/presets";
 import { useBookingFlow } from "@/store/booking-flow";
 
 type Props = {
@@ -19,7 +20,7 @@ type Props = {
 export function BookingWizard({ tenant }: Props) {
   const { step, service, setStep, hydrateTenant } = useBookingFlow();
   const [ready, setReady] = useState(false);
-  const brand = tenant.brandPrimary ?? "#E06535";
+  const preset = getThemePreset(tenant.themePreset);
 
   useEffect(() => {
     const apply = () => {
@@ -38,13 +39,7 @@ export function BookingWizard({ tenant }: Props) {
   return (
     <div
       className="booking-shell min-h-dvh"
-      style={
-        {
-          ["--brand"]: brand,
-          ["--brand-soft"]: `color-mix(in srgb, ${brand} 18%, transparent)`,
-          ["--brand-fg"]: "#F4F5F6",
-        } as CSSProperties
-      }
+      style={themePresetVars(preset, tenant.brandPrimary) as CSSProperties}
     >
       <TenantHeader tenant={tenant} />
       <StepProgress step={step} />
@@ -55,7 +50,7 @@ export function BookingWizard({ tenant }: Props) {
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="h-[72px] animate-pulse rounded-xl bg-[var(--surface-2)]"
+                className="h-[72px] animate-pulse rounded-[var(--radius-card)] bg-[var(--surface-2)]"
               />
             ))}
           </div>

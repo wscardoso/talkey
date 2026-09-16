@@ -1,5 +1,8 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
+import { getTenantBySlug } from "@/lib/booking/tenant";
+import { getThemePreset, themePresetVars } from "@/lib/themes/presets";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -14,8 +17,16 @@ export default async function SucessoPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
   const { bookingId } = await searchParams;
 
+  const tenant = await getTenantBySlug(slug).catch(() => null);
+  const preset = getThemePreset(tenant?.themePreset);
+
   return (
-    <div className="booking-shell flex min-h-dvh flex-col items-center justify-center px-4">
+    <div
+      className="booking-shell flex min-h-dvh flex-col items-center justify-center px-4"
+      style={
+        themePresetVars(preset, tenant?.brandPrimary ?? null) as CSSProperties
+      }
+    >
       <div className="w-full max-w-md text-center">
         <div
           className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--success)] text-2xl text-[var(--success-fg)]"
@@ -30,13 +41,13 @@ export default async function SucessoPage({ params, searchParams }: PageProps) {
           Horário confirmado. Enviamos a confirmação no seu WhatsApp.
         </p>
         {bookingId ? (
-          <p className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 font-mono text-xs text-[var(--muted)]">
+          <p className="mt-4 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] px-3 py-2 font-mono text-xs text-[var(--muted)]">
             Ref: {bookingId}
           </p>
         ) : null}
         <Link
           href={`/agendar/${slug}`}
-          className="mt-8 inline-flex min-h-11 items-center justify-center rounded-xl border border-[var(--border)] px-5 text-sm font-medium text-[var(--fg)]"
+          className="mt-8 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-card)] border border-[var(--border)] px-5 text-sm font-medium text-[var(--fg)]"
         >
           Novo agendamento
         </Link>

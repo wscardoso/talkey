@@ -137,7 +137,7 @@ export function ConfirmStep({ slug, timezone }: Props) {
         </p>
       </div>
 
-      <dl className="divide-y divide-[var(--border)] overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]">
+      <dl className="divide-y divide-[var(--border)] overflow-hidden rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)]">
         <Row label="Serviço" value={service.name} />
         <Row
           label="Profissional"
@@ -167,7 +167,7 @@ export function ConfirmStep({ slug, timezone }: Props) {
           type="button"
           onClick={() => setStep("customer")}
           disabled={submitting}
-          className="min-h-11 flex-1 rounded-xl border border-[var(--border)] px-4 text-sm font-medium text-[var(--muted)] disabled:opacity-50"
+          className="min-h-11 flex-1 rounded-[var(--radius-card)] border border-[var(--border)] px-4 text-sm font-medium text-[var(--muted)] disabled:opacity-50"
         >
           Voltar
         </button>
@@ -175,7 +175,7 @@ export function ConfirmStep({ slug, timezone }: Props) {
           type="button"
           onClick={() => void handleConfirm()}
           disabled={submitting}
-          className="relative min-h-11 flex-[2] overflow-hidden rounded-xl bg-[var(--brand)] px-4 text-sm font-semibold text-[var(--brand-fg)] transition enabled:hover:brightness-110 disabled:opacity-70"
+          className="relative min-h-11 flex-[2] overflow-hidden rounded-[var(--radius-card)] bg-[var(--brand)] px-4 text-sm font-semibold text-[var(--brand-fg)] transition enabled:hover:brightness-110 disabled:opacity-70"
         >
           {submitting ? (
             <span className="inline-flex items-center gap-2">

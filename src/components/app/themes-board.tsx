@@ -1,23 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import Link from "next/link";
+import {
+  THEME_PRESETS,
+  THEME_RADIUS,
+  getThemePreset,
+  themePresetVars,
+  type ThemePreset,
+} from "@/lib/themes/presets";
 
 type ThemeSettings = {
   slug: string;
   name: string;
   brandPrimary: string | null;
   logoUrl: string | null;
+  themePreset: string | null;
 };
-
-const PRESETS = [
-  { id: "cobre", label: "Cobre", color: "#E06535" },
-  { id: "ouro", label: "Ouro", color: "#C4A35A" },
-  { id: "verde", label: "Verde oliva", color: "#6B8F71" },
-  { id: "azul", label: "Azul petróleo", color: "#3D6B7A" },
-  { id: "vinho", label: "Vinho", color: "#8B3A3A" },
-  { id: "carvao", label: "Carvão", color: "#8A8F98" },
-] as const;
 
 const inputClass =
   "min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--graphite)] px-3 text-sm outline-none ring-[var(--copper)] focus:ring-2";
@@ -40,6 +40,7 @@ export function ThemesBoard() {
         name: data.settings.name,
         brandPrimary: data.settings.brandPrimary,
         logoUrl: data.settings.logoUrl,
+        themePreset: data.settings.themePreset,
       });
     }
     setLoading(false);
@@ -62,11 +63,13 @@ export function ThemesBoard() {
       body: JSON.stringify({
         brandPrimary: payload.brandPrimary || null,
         logoUrl: payload.logoUrl || "",
+        themePreset: payload.themePreset || "",
       }),
     });
     setSaving(false);
     if (!res.ok) {
-      setError("Não foi possível salvar o tema");
+      const data = await res.json().catch(() => ({}));
+      setError(data.message ?? "Não foi possível salvar o tema");
       return;
     }
     setMessage("Tema atualizado");
@@ -95,18 +98,23 @@ export function ThemesBoard() {
     return <p className="text-sm text-[var(--steel)]">Carregando…</p>;
   }
 
-  const brand = settings.brandPrimary ?? "#E06535";
+  const current = getThemePreset(settings.themePreset);
+  const shellVars = themePresetVars(current, settings.brandPrimary);
 
   return (
     <div className="space-y-5">
       <section
         className="overflow-hidden rounded-2xl border border-[var(--border)]"
-        style={{
-          background: `linear-gradient(160deg, color-mix(in srgb, ${brand} 28%, #1a1b1e), #1a1b1e 70%)`,
-        }}
+        style={shellVars as CSSProperties}
       >
-        <div className="flex items-center gap-4 p-5">
-          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-[var(--graphite)] ring-2 ring-white/20">
+        <div
+          className="flex items-center gap-4 p-5"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 60% at 20% 0%, color-mix(in srgb, var(--brand) 30%, transparent), transparent 70%), var(--bg)",
+          }}
+        >
+          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-[var(--surface-2)] ring-2 ring-[var(--brand)]/40">
             {settings.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -115,59 +123,89 @@ export function ThemesBoard() {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div
-                className="flex h-full w-full items-center justify-center font-[family-name:var(--font-display)] text-xl"
-                style={{ color: brand }}
-              >
+              <div className="flex h-full w-full items-center justify-center font-[family-name:var(--font-display)] text-xl text-[var(--brand)]">
                 {settings.name.slice(0, 2).toUpperCase()}
               </div>
             )}
           </div>
           <div className="min-w-0">
-            <p className="font-[family-name:var(--font-display)] text-2xl tracking-wide">
+            <p className="font-[family-name:var(--font-display)] text-2xl tracking-wide text-[var(--fg)]">
               {settings.name}
             </p>
-            <p className="text-sm text-[var(--steel)]">
-              Prévia da página pública
+            <p className="text-sm text-[var(--muted)]">
+              {current.label} · prévia da página pública
             </p>
+          </div>
+        </div>
+        <div
+          className="space-y-2 px-5 pb-5"
+          style={{ background: "var(--bg)" }}
+          aria-hidden
+        >
+          <div className="flex items-center justify-between rounded-[var(--radius-card)] border border-[var(--brand)] bg-[var(--brand-soft)] px-3 py-2.5 text-sm">
+            <span className="text-[var(--fg)]">Combo completo</span>
+            <span className="font-semibold text-[var(--brand)]">R$ 70</span>
+          </div>
+          <div className="flex gap-2">
+            {["09:00", "10:30", "14:00"].map((hour, i) => (
+              <span
+                key={hour}
+                className="flex h-9 flex-1 items-center justify-center rounded-[var(--radius-card)] border text-xs font-semibold tabular-nums"
+                style={
+                  i === 0
+                    ? {
+                        background: "var(--brand)",
+                        borderColor: "var(--brand)",
+                        color: "var(--brand-fg)",
+                      }
+                    : {
+                        background: "var(--surface)",
+                        borderColor: "var(--border)",
+                        color: "var(--fg)",
+                      }
+                }
+              >
+                {hour}
+              </span>
+            ))}
+          </div>
+          <div
+            className="flex min-h-11 items-center justify-center rounded-[var(--radius-card)] text-sm font-semibold"
+            style={{ background: "var(--brand)", color: "var(--brand-fg)" }}
+          >
+            Confirmar horário
           </div>
         </div>
       </section>
 
       <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--lead)] p-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--steel)]">
-          Presets
-        </h2>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {PRESETS.map((p) => {
-            const active =
-              (settings.brandPrimary ?? "").toUpperCase() ===
-              p.color.toUpperCase();
-            return (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => void save({ brandPrimary: p.color })}
-                className={`flex min-h-12 items-center gap-3 rounded-xl border px-3 text-left text-sm ${
-                  active
-                    ? "border-[var(--copper)] bg-[var(--brand-soft)]"
-                    : "border-[var(--border)]"
-                }`}
-              >
-                <span
-                  className="h-8 w-8 shrink-0 rounded-lg"
-                  style={{ backgroundColor: p.color }}
-                />
-                {p.label}
-              </button>
-            );
-          })}
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--steel)]">
+            Packs de tema
+          </h2>
+          <p className="mt-1 text-xs text-[var(--steel)]">
+            Cada pack muda cor, superfície e cantos da sua página de
+            agendamento. Escolher um pack volta a usar a cor dele.
+          </p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {THEME_PRESETS.map((preset) => (
+            <PresetCard
+              key={preset.id}
+              preset={preset}
+              selected={current.id === preset.id}
+              disabled={saving}
+              onSelect={() =>
+                void save({ themePreset: preset.id, brandPrimary: null })
+              }
+            />
+          ))}
         </div>
       </section>
 
       <section className="space-y-3 rounded-2xl border border-[var(--border)] bg-[var(--lead)] p-4">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-[var(--steel)]">
-          Personalizar
+          Ajustes da casa
         </h2>
         <label className="block">
           <span className="text-xs uppercase tracking-wider text-[var(--steel)]">
@@ -176,8 +214,9 @@ export function ThemesBoard() {
           <div className="mt-1 flex gap-2">
             <input
               type="color"
+              aria-label="Escolher cor principal"
               className="h-12 w-16 cursor-pointer rounded-xl border border-[var(--border)] bg-[var(--graphite)]"
-              value={brand}
+              value={settings.brandPrimary ?? current.tokens.brand}
               onChange={(e) =>
                 setSettings((s) =>
                   s ? { ...s, brandPrimary: e.target.value } : s,
@@ -192,10 +231,23 @@ export function ThemesBoard() {
                   s ? { ...s, brandPrimary: e.target.value || null } : s,
                 )
               }
-              placeholder="#E06535"
+              placeholder={current.tokens.brand}
             />
           </div>
+          <p className="mt-1 text-xs text-[var(--steel)]">
+            Vazio usa a cor do pack {current.label} ({current.tokens.brand}).
+          </p>
         </label>
+        {settings.brandPrimary ? (
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void save({ brandPrimary: null })}
+            className="min-h-11 rounded-xl border border-[var(--border)] px-4 text-sm text-[var(--steel)] disabled:opacity-50"
+          >
+            Voltar para a cor do pack
+          </button>
+        ) : null}
         <label className="block">
           <span className="text-xs uppercase tracking-wider text-[var(--steel)]">
             Logo
@@ -265,6 +317,104 @@ export function ThemesBoard() {
         </p>
       ) : null}
       {error ? <p className="text-sm text-[#fca5a5]">{error}</p> : null}
+    </div>
+  );
+}
+
+function PresetCard({
+  preset,
+  selected,
+  disabled,
+  onSelect,
+}: {
+  preset: ThemePreset;
+  selected: boolean;
+  disabled: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      disabled={disabled}
+      aria-pressed={selected}
+      className={`flex flex-col gap-3 rounded-2xl border p-3 text-left transition disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--copper)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lead)] ${
+        selected
+          ? "border-[var(--copper)] bg-[var(--brand-soft)]"
+          : "border-[var(--border)] hover:border-[var(--steel)]/60"
+      }`}
+    >
+      <PresetPreview preset={preset} />
+      <div className="space-y-1.5">
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="font-medium text-[var(--offwhite)]">
+            {preset.label}
+          </span>
+          <span className="text-[11px] text-[var(--steel)]">
+            {THEME_RADIUS[preset.radius].label}
+          </span>
+        </div>
+        <p className="text-xs leading-relaxed text-[var(--steel)]">
+          {preset.description}
+        </p>
+        <ul className="flex flex-wrap gap-1 pt-0.5">
+          {preset.fit.map((tag) => (
+            <li
+              key={tag}
+              className="rounded-full border border-[var(--border)] px-2 py-0.5 text-[11px] text-[var(--steel)]"
+            >
+              {tag}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </button>
+  );
+}
+
+function PresetPreview({ preset }: { preset: ThemePreset }) {
+  return (
+    <div
+      aria-hidden
+      className="space-y-2 rounded-xl p-3"
+      style={
+        {
+          ...themePresetVars(preset),
+          background: "var(--bg)",
+        } as CSSProperties
+      }
+    >
+      <div className="flex items-center gap-2">
+        <span
+          className="h-7 w-7 rounded-full"
+          style={{ background: "var(--brand)" }}
+        />
+        <span className="flex-1 space-y-1">
+          <span className="block h-2 w-20 rounded-full bg-[var(--fg)] opacity-80" />
+          <span className="block h-1.5 w-12 rounded-full bg-[var(--muted)] opacity-70" />
+        </span>
+      </div>
+      <div className="flex items-center justify-between gap-2 rounded-[var(--radius-card)] border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2">
+        <span className="h-2 w-16 rounded-full bg-[var(--muted)] opacity-70" />
+        <span className="text-[10px] font-semibold text-[var(--brand)]">
+          R$ 45
+        </span>
+      </div>
+      <div className="flex gap-1.5">
+        {["09:00", "09:40", "10:20"].map((t, i) => (
+          <span
+            key={t}
+            className="flex-1 rounded-[var(--radius-card)] border border-[var(--border)] py-1 text-center text-[9px] font-semibold tabular-nums"
+            style={
+              i === 1
+                ? { background: "var(--brand)", color: "var(--brand-fg)" }
+                : { background: "var(--surface)", color: "var(--fg)" }
+            }
+          >
+            {t}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
